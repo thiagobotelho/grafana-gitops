@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
   - ../../base
   - grafana-instance.yaml
-  - datasources/prometheus-credentials.yaml
+  - prometheus-ocp-token-secret.yaml
   - datasources/tempo-datasource.yaml
   - datasources/loki-datasource.yaml
   - datasources/prometheus-datasource.yaml
