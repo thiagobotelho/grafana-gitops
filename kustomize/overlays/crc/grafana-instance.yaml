@@ -5,6 +5,7 @@ metadata:
   namespace: grafana
   annotations:
     argocd.argoproj.io/sync-wave: "10"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
   labels:
     dashboards: grafana
 spec:
@@ -16,3 +17,12 @@ spec:
       admin_password: start
     auth:
       disable_login_form: "false"
+   route:
+    metadata:
+      annotations:
+        argocd.argoproj.io/sync-wave: "11"
+    spec:
+      host: grafana-grafana.apps-crc.testing
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: Redirect
