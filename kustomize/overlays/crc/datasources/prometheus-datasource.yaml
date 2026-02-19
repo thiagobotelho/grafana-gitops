@@ -1,0 +1,36 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: prometheus
+  namespace: grafana
+  annotations:
+    argocd.argoproj.io/sync-wave: "22"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  valuesFrom:
+    - targetPath: "basicAuthUser"
+      valueFrom:
+        secretKeyRef:
+          name: prometheus-credentials
+          key: PROMETHEUS_USERNAME
+    - targetPath: "secureJsonData.basicAuthPassword"
+      valueFrom:
+        secretKeyRef:
+          name: prometheus-credentials
+          key: PROMETHEUS_PASSWORD
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasource:
+    name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus-service:9090
+    isDefault: true
+    basicAuth: true
+    basicAuthUser: ${PROMETHEUS_USERNAME}
+    jsonData:
+      tlsSkipVerify: true
+      timeInterval: 5s
+    secureJsonData:
+      basicAuthPassword: ${PROMETHEUS_PASSWORD}
