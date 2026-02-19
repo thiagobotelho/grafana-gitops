@@ -21,6 +21,7 @@ Todo o ciclo de vida é controlado via Git, garantindo rastreabilidade, padroniz
 
 ## 🏗 Estrutura do Repositório
 
+```bash
 grafana-gitops/
 └── kustomize/
     ├── base/
@@ -33,6 +34,7 @@ grafana-gitops/
         └── crc/
             ├── kustomization.yaml
             └── grafana-instance.yaml
+```
 
 ---
 
