@@ -23,16 +23,16 @@ Todo o ciclo de vida é controlado via Git, garantindo rastreabilidade, padroniz
 
 grafana-gitops/
 └── kustomize/
-├── base/
-│ ├── namespace-operator.yaml
-│ ├── namespace-grafana.yaml
-│ ├── operatorgroup.yaml
-│ ├── subscription.yaml
-│ └── kustomization.yaml
-└── overlays/
-└── crc/
-├── kustomization.yaml
-└── grafana-instance.yaml
+    ├── base/
+    │   ├── namespace-operator.yaml
+    │   ├── namespace-grafana.yaml
+    │   ├── operatorgroup.yaml
+    │   ├── subscription.yaml
+    │   └── kustomization.yaml
+    └── overlays/
+        └── crc/
+            ├── kustomization.yaml
+            └── grafana-instance.yaml
 
 ---
 
