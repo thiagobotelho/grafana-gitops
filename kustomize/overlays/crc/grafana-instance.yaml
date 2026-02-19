@@ -6,18 +6,14 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "10"
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-  labels:
-    dashboards: grafana
 spec:
   config:
     log:
-      mode: console
+      mode: "console"
     security:
-      admin_user: root
-      admin_password: start
-    auth:
-      disable_login_form: "false"
-   route:
+      admin_user: "root"
+      admin_password: "start"
+  route:
     metadata:
       annotations:
         argocd.argoproj.io/sync-wave: "11"
@@ -26,3 +22,4 @@ spec:
       tls:
         termination: edge
         insecureEdgeTerminationPolicy: Redirect
+
