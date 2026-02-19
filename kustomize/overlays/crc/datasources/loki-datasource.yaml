@@ -4,7 +4,7 @@ metadata:
   name: loki
   namespace: grafana
   annotations:
-    argocd.argoproj.io/sync-wave: "20"
+    argocd.argoproj.io/sync-wave: "30"
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   instanceSelector:
@@ -14,7 +14,7 @@ spec:
     name: Loki
     type: loki
     access: proxy
-    url: http://loki-gateway.loki.svc.cluster.local:3100
-    isDefault: false
+    url: https://loki-gateway-http.openshift-logging.svc.cluster.local:8080
     jsonData:
-      maxLines: 1000
+      tlsSkipVerify: true
+      timeout: 60
