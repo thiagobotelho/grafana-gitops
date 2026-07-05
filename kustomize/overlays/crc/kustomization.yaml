@@ -6,6 +6,8 @@ resources:
   - grafana-instance.yaml
   - openshift-monitoring-access.yaml
   - dashboard-openshift-overview.yaml
+  - dashboard-keycloak-capacity.yaml
+  - dashboard-keycloak-troubleshooting.yaml
   - zabbix-datasource.yaml
   - datasources/tempo-datasource.yaml
   - datasources/loki-datasource.yaml

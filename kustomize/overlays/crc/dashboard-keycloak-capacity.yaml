@@ -1,0 +1,15 @@
+# Dashboard oficial do Keycloak para planejamento de capacidade (Keycloak >= 26.3).
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: keycloak-capacity-planning
+  namespace: grafana
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  resyncPeriod: 1h
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus-OCP
+  url: https://raw.githubusercontent.com/keycloak/keycloak-grafana-dashboard/main/dashboards/keycloak-capacity-planning-dashboard.json

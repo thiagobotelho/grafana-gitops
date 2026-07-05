@@ -11,6 +11,7 @@ spec:
     matchLabels:
       dashboards: grafana
   datasource:
+    uid: loki
     name: Loki
     type: loki
     access: proxy
@@ -18,3 +19,10 @@ spec:
     jsonData:
       tlsSkipVerify: true
       timeout: 60
+      # Procura trace_id nos logs e cria um link direto para o Tempo.
+      derivedFields:
+        - name: TraceID
+          matcherRegex: '"?(?:trace_id|traceId)"?[=:]"?([a-fA-F0-9]{16,32})'
+          datasourceUid: tempo
+          url: "$${__value.raw}"
+          urlDisplayLabel: "Abrir trace"

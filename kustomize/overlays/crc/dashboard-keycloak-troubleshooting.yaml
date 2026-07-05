@@ -1,0 +1,15 @@
+# Dashboard oficial do Keycloak para diagnóstico de erros, latência e saturação.
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: keycloak-troubleshooting
+  namespace: grafana
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  resyncPeriod: 1h
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus-OCP
+  url: https://raw.githubusercontent.com/keycloak/keycloak-grafana-dashboard/main/dashboards/keycloak-troubleshooting-dashboard.json

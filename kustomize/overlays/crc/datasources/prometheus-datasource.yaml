@@ -25,8 +25,14 @@ spec:
     access: proxy
     url: https://thanos-querier.openshift-monitoring.svc:9091
     jsonData:
-      # O endpoint usa CA interna; para laboratório o proxy valida via token.
+      # O endpoint usa a CA interna do OpenShift; o token fica em Secret.
       tlsSkipVerify: true
       httpHeaderName1: "Authorization"
+      timeInterval: 30s
+      # Torna exemplares OpenMetrics clicáveis e abre o trace no Tempo.
+      exemplarTraceIdDestinations:
+        - name: trace_id
+          datasourceUid: tempo
+          urlDisplayLabel: "Abrir trace no Tempo"
     secureJsonData:
       httpHeaderValue1: "Bearer ${token}"
