@@ -19,11 +19,13 @@ spec:
       dashboards: grafana
 
   datasource:
+    uid: prometheus-ocp
     name: Prometheus-OCP
     type: prometheus
     access: proxy
     url: https://thanos-querier.openshift-monitoring.svc:9091
     jsonData:
+      # O endpoint usa CA interna; para laboratório o proxy valida via token.
       tlsSkipVerify: true
       httpHeaderName1: "Authorization"
     secureJsonData:

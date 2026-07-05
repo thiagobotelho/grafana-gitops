@@ -59,7 +59,18 @@ Contém customizações por ambiente:
 
 ## 🚀 Deploy Manual (CRC / OpenShift)
 
-Aplicar via Kustomize:
+O overlay cria uma ServiceAccount somente leitura para o Thanos Querier do
+OpenShift e provisiona datasources Prometheus, Loki, Tempo e Zabbix. Crie
+somente as credenciais do Zabbix fora do Git:
 
 ```bash
+oc -n grafana create secret generic zabbix-datasource \
+  --from-literal=username="$ZABBIX_USER" \
+  --from-literal=password="$ZABBIX_PASSWORD"
+
 oc apply -k kustomize/overlays/crc
+```
+
+As credenciais administrativas e tokens não são armazenados nos manifests.
+Consulte o Secret gerado pelo Grafana Operator ou integre um gerenciador de
+segredos para ambientes compartilhados.

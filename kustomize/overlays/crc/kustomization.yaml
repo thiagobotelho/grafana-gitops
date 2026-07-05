@@ -4,7 +4,9 @@ kind: Kustomization
 resources:
   - ../../base
   - grafana-instance.yaml
+  - openshift-monitoring-access.yaml
+  - dashboard-openshift-overview.yaml
+  - zabbix-datasource.yaml
   - datasources/tempo-datasource.yaml
   - datasources/loki-datasource.yaml
-  - datasources/prometheus-ocp-token-secret.yaml
   - datasources/prometheus-datasource.yaml

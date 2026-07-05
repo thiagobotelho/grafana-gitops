@@ -10,9 +10,6 @@ spec:
   config:
     log:
       mode: "console"
-    security:
-      admin_user: "root"
-      admin_password: "start"
   route:
     metadata:
       annotations:
@@ -22,4 +19,3 @@ spec:
       tls:
         termination: edge
         insecureEdgeTerminationPolicy: Redirect
-
