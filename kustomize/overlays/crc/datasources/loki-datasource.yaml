@@ -21,7 +21,7 @@ spec:
     name: Loki
     type: loki
     access: proxy
-    url: https://loki-gateway-http.openshift-logging.svc.cluster.local:8080
+    url: https://loki-gateway-http.openshift-logging.svc.cluster.local:8080/api/logs/v1/application
     jsonData:
       tlsSkipVerify: true
       timeout: 60
