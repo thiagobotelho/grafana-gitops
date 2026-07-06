@@ -5,6 +5,7 @@ resources:
   - ../../base
   - grafana-instance.yaml
   - openshift-monitoring-access.yaml
+  - loki-access.yaml
   - dashboard-openshift-overview.yaml
   - dashboard-keycloak-capacity.yaml
   - dashboard-keycloak-troubleshooting.yaml
