@@ -12,16 +12,6 @@ spec:
   config:
     log:
       mode: "console"
-  route:
-    metadata:
-      annotations:
-        argocd.argoproj.io/sync-wave: "11"
-    spec:
-      host: grafana-grafana.apps-crc.testing
-      tls:
-        termination: edge
-        insecureEdgeTerminationPolicy: Redirect
-    
     server:
       root_url: "https://grafana-grafana.apps-crc.testing"
 
@@ -71,3 +61,12 @@ spec:
                     secretKeyRef:
                       name: grafana-oauth
                       key: client-secret
+  route:
+    metadata:
+      annotations:
+        argocd.argoproj.io/sync-wave: "11"
+    spec:
+      host: grafana-grafana.apps-crc.testing
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: Redirect
