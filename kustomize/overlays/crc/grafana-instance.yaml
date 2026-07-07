@@ -21,3 +21,53 @@ spec:
       tls:
         termination: edge
         insecureEdgeTerminationPolicy: Redirect
+    
+    server:
+      root_url: "https://grafana-grafana.apps-crc.testing"
+
+    auth:
+      disable_login_form: "false"
+      oauth_auto_login: "false"
+
+    auth.generic_oauth:
+      enabled: "true"
+      name: "Keycloak"
+      allow_sign_up: "true"
+
+      client_id: "${AUTH_CLIENT_ID}"
+      client_secret: "${AUTH_CLIENT_SECRET}"
+
+      scopes: "openid email profile"
+      auth_url: "https://keycloak-dev.apps-crc.testing/realms/observability/protocol/openid-connect/auth"
+      token_url: "https://keycloak-dev.apps-crc.testing/realms/observability/protocol/openid-connect/token"
+      api_url: "https://keycloak-dev.apps-crc.testing/realms/observability/protocol/openid-connect/userinfo"
+
+      email_attribute_path: "email"
+      login_attribute_path: "preferred_username"
+      name_attribute_path: "name"
+      groups_attribute_path: "groups"
+
+      use_pkce: "true"
+      tls_skip_verify_insecure: "true"
+
+      role_attribute_strict: "true"
+      allow_assign_grafana_admin: "true"
+      role_attribute_path: "contains(groups[*], '/observability/grafana-grafana-admins') && 'GrafanaAdmin' || contains(groups[*], '/observability/grafana-admins') && 'Admin' || contains(groups[*], '/observability/grafana-editors') && 'Editor' || contains(groups[*], '/observability/grafana-viewers') && 'Viewer' || 'None'"
+
+  deployment:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: grafana
+              env:
+                - name: AUTH_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-oauth
+                      key: client-id
+                - name: AUTH_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-oauth
+                      key: client-secret
