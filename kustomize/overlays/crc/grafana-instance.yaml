@@ -42,7 +42,7 @@ spec:
       use_refresh_token: "true"
       tls_skip_verify_insecure: "true"
 
-      signout_redirect_url: "https://keycloak-dev.apps-crc.testing/realms/observability/protocol/openid-connect/logout?client_id=grafana&post_logout_redirect_uri=https%3A%2F%2Fgrafana.apps-crc.testing%2F"
+      signout_redirect_url: "https://keycloak-dev.apps-crc.testing/realms/observability/protocol/openid-connect/logout?client_id=grafana&post_logout_redirect_uri=https%3A%2F%2Fgrafana-grafana.apps-crc.testing%2F"
 
       role_attribute_strict: "true"
       allow_assign_grafana_admin: "true"
