@@ -14,7 +14,7 @@ spec:
       mode: console
 
     server:
-      root_url: "https://grafana.apps-crc.testing"
+      root_url: "https://grafana-grafana.apps-crc.testing"
 
     auth:
       disable_login_form: "false"
@@ -71,7 +71,7 @@ spec:
       annotations:
         argocd.argoproj.io/sync-wave: "11"
     spec:
-      host: grafana.apps-crc.testing
+      host: grafana-grafana.apps-crc.testing
       tls:
         insecureEdgeTerminationPolicy: Redirect
         termination: edge
