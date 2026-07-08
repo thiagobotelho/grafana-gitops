@@ -61,6 +61,7 @@ oc -n grafana get grafana,grafanadatasource,grafanadashboard,route
 | `grafana-oauth` | `grafana` | `client-id`, `client-secret` | `scripts/bootstrap-grafana-oauth.sh` |
 | `prometheus-ocp-token` | `grafana` | `token` | manifest `rules/openshift-monitoring-access.yaml` |
 | `grafana-loki-token` | `grafana` | `token` | manifest `rules/loki-access.yaml` |
+| `grafana-tempo-token` | `grafana` | `token` | `tempo-gitops` |
 | `zabbix-datasource` | `grafana` | `username`, `password` | `zabbix-gitops/scripts/bootstrap-zabbix.sh` |
 
 Rotação do OAuth: reexecute `scripts/bootstrap-grafana-oauth.sh` após rotacionar

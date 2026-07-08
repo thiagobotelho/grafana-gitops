@@ -7,6 +7,12 @@ metadata:
     argocd.argoproj.io/sync-wave: "23"
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
+  valuesFrom:
+    - targetPath: secureJsonData.httpHeaderValue1
+      valueFrom:
+        secretKeyRef:
+          name: grafana-tempo-token
+          key: token
   instanceSelector:
     matchLabels:
       dashboards: grafana
@@ -20,6 +26,7 @@ spec:
     jsonData:
       httpMethod: GET
       tlsSkipVerify: true
+      httpHeaderName1: Authorization
       nodeGraph:
         enabled: true
       serviceMap:
@@ -53,3 +60,5 @@ spec:
         timeShiftEnabled: true
         spanStartTimeShift: "-5m"
         spanEndTimeShift: "5m"
+    secureJsonData:
+      httpHeaderValue1: "Bearer ${token}"
