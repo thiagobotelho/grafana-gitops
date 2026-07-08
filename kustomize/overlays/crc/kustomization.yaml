@@ -4,12 +4,12 @@ kind: Kustomization
 resources:
   - ../../base
   - grafana-instance.yaml
-  - openshift-monitoring-access.yaml
-  - loki-access.yaml
-  - dashboard-openshift-overview.yaml
-  - dashboard-keycloak-capacity.yaml
-  - dashboard-keycloak-troubleshooting.yaml
-  - zabbix-datasource.yaml
+  - rules/openshift-monitoring-access.yaml
+  - rules/loki-access.yaml
+  - dashboards/dashboard-openshift-overview.yaml
+  - dashboards/dashboard-keycloak-capacity.yaml
+  - dashboards/dashboard-keycloak-troubleshooting.yaml
+  - datasources/zabbix-datasource.yaml
   - datasources/tempo-datasource.yaml
   - datasources/loki-datasource.yaml
   - datasources/prometheus-datasource.yaml
