@@ -13,7 +13,8 @@ GRAFANA_NAMESPACE="${GRAFANA_NAMESPACE:-grafana}"
 GRAFANA_OAUTH_SECRET="${GRAFANA_OAUTH_SECRET:-grafana-oauth}"
 KEYCLOAK_NAMESPACE="${KEYCLOAK_NAMESPACE:-keycloak-dev}"
 KEYCLOAK_ADMIN_SECRET="${KEYCLOAK_ADMIN_SECRET:-keycloak-dev-initial-admin}"
-KEYCLOAK_BASE_URL="${KEYCLOAK_BASE_URL:-https://keycloak-dev.apps-crc.testing}"
+KEYCLOAK_ROUTE_NAME="${KEYCLOAK_ROUTE_NAME:-keycloak}"
+KEYCLOAK_BASE_URL="${KEYCLOAK_BASE_URL:-}"
 KEYCLOAK_REALM="${KEYCLOAK_REALM:-observability}"
 KEYCLOAK_GRAFANA_CLIENT_ID="${KEYCLOAK_GRAFANA_CLIENT_ID:-grafana}"
 
@@ -28,6 +29,15 @@ require "${OC_BIN}"
 require curl
 require jq
 require base64
+
+if [[ -z "${KEYCLOAK_BASE_URL}" ]]; then
+  keycloak_route_host="$("${OC_BIN}" -n "${KEYCLOAK_NAMESPACE}" get route "${KEYCLOAK_ROUTE_NAME}" -o jsonpath='{.spec.host}' 2>/dev/null || true)"
+  if [[ -z "${keycloak_route_host}" ]]; then
+    echo "[ERROR] Defina KEYCLOAK_BASE_URL ou exponha a Route ${KEYCLOAK_NAMESPACE}/${KEYCLOAK_ROUTE_NAME}." >&2
+    exit 1
+  fi
+  KEYCLOAK_BASE_URL="https://${keycloak_route_host}"
+fi
 
 admin_user="$("${OC_BIN}" -n "${KEYCLOAK_NAMESPACE}" get secret "${KEYCLOAK_ADMIN_SECRET}" -o jsonpath='{.data.username}' | base64 -d)"
 admin_password="$("${OC_BIN}" -n "${KEYCLOAK_NAMESPACE}" get secret "${KEYCLOAK_ADMIN_SECRET}" -o jsonpath='{.data.password}' | base64 -d)"

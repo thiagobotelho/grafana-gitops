@@ -50,7 +50,7 @@ oc -n grafana create secret generic zabbix-datasource \
   --from-literal=password="${ZABBIX_PASSWORD}" \
   --dry-run=client -o yaml | oc apply -f -
 
-oc apply -k kustomize/overlays/crc
+oc apply -k overlays/desenvolvimento
 oc -n grafana get grafana,grafanadatasource,grafanadashboard,route
 ```
 
@@ -82,8 +82,12 @@ O nome do Deployment pode variar com a versão do Operator; descubra-o com
 ## Estrutura
 
 ```text
-kustomize/base/          namespaces e instalação OLM do Operator
-kustomize/overlays/crc/  instância, acesso, datasources e dashboards
+base/                         namespaces e instalação OLM do Operator
+overlays/desenvolvimento/     instância, acesso, datasources e dashboards para CRC
+overlays/aceite/              homologação, com hosts e secrets parametrizados
+overlays/producao/            produção, com placeholders de domínio e hardening
+dashboards/                   árvore recomendada para novos dashboards JSON
+docs/                         documentação operacional por ambiente
 ```
 
 ## Dashboards provisionados
@@ -139,3 +143,25 @@ e [Tempo datasource](https://grafana.com/docs/grafana/latest/datasources/tempo/)
 Para autenticação, veja a documentação oficial de
 [Keycloak OAuth2 no Grafana](https://grafana.com/docs/grafana/latest/setup-grafana/configure-access/configure-authentication/keycloak/)
 e [Generic OAuth](https://grafana.com/docs/grafana/latest/setup-grafana/configure-access/configure-authentication/generic-oauth/).
+
+## Ambientes e validação
+
+```bash
+oc kustomize overlays/desenvolvimento >/tmp/grafana-dev.yaml
+oc kustomize overlays/aceite >/tmp/grafana-aceite.yaml
+oc kustomize overlays/producao >/tmp/grafana-prod.yaml
+oc apply --dry-run=client -k overlays/desenvolvimento
+```
+
+`desenvolvimento` é o perfil CRC. `aceite` e `producao` usam placeholders
+`.example.invalid`; substitua por Route/TLS/Keycloak reais do ambiente antes de
+sincronizar pelo Argo CD. Mais detalhes: `docs/AMBIENTES.md`.
+
+## Automatizações preservadas e ajustadas
+
+- Mantido `.github/workflows/validate.yml`, que renderiza todos os
+  `kustomization.yaml` e roda `yamllint`.
+- Mantido e ajustado `scripts/bootstrap-grafana-oauth.sh`; agora ele descobre a
+  Route do Keycloak quando `KEYCLOAK_BASE_URL` não é informado.
+- Adicionados entrypoints `overlays/desenvolvimento`, `overlays/aceite` e
+  `overlays/producao`; o fluxo Argo CD passa a usar `overlays/desenvolvimento`.
