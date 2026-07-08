@@ -4,6 +4,25 @@ Grafana Operator e instância Grafana declarativos para OpenShift Local. O
 overlay integra Prometheus/Thanos, Loki, Tempo e Zabbix e provisiona dashboards
 sem armazenar credenciais no Git.
 
+
+## Arquitetura
+
+```mermaid
+flowchart LR
+    KC[Keycloak OIDC] --> GF[Grafana]
+    GF --> P[Prometheus/Thanos]
+    GF --> L[Loki]
+    GF --> T[Tempo]
+    GF --> Z[Zabbix API]
+    P -. exemplars trace_id .-> T
+    L -. trace_id .-> T
+    T -. traces-to-logs .-> L
+```
+
+O Grafana é a camada de visualização e correlação: autentica via Keycloak,
+consulta métricas no Prometheus/Thanos, logs no Loki, traces no Tempo e dados
+operacionais no Zabbix.
+
 ## Correlação de observabilidade
 
 ```text
@@ -22,10 +41,13 @@ Os datasources possuem UIDs estáveis e correlações provisionadas:
 - dashboard exemplo oficial do Argo CD é importado do repositório upstream e usa
   as métricas expostas pelo OpenShift GitOps Operator.
 
-Metrics Drilldown requer Grafana `11.6+`; no Grafana `12+`, os aplicativos
-Drilldown vêm habilitados por padrão. A experiência depende dos backends:
-spanmetrics e exemplares são preparados por `opentelemetry-gitops`, enquanto
-TraceQL metrics completo depende da versão/capacidade do Tempo instalado.
+O Drilldown do Grafana usa exploração sem consulta manual. Para traces, ele
+depende de RED/TraceQL Metrics no Tempo e das correlações do datasource. Este
+repo provisiona `nodeGraph`, `serviceMap`, `tracesToLogsV2` e
+`tracesToMetrics`. No CRC, as métricas RED contínuas vêm do connector
+`span_metrics` do `opentelemetry-gitops`; Service Graph só mostra dados quando
+existirem métricas de grafo no Prometheus, geradas por Tempo metrics-generator,
+Grafana Alloy ou outro pipeline compatível.
 
 ## Deploy
 
@@ -104,6 +126,12 @@ Drilldown preparado:
 - Prometheus → Tempo via exemplares `trace_id`;
 - Tempo → Loki por `trace_id` e `service.name`;
 - Loki → Tempo por campos `trace_id`/`traceId`;
+- Tempo → Prometheus via `tracesToMetrics` usando as métricas
+  `traces_span_metrics_*` geradas pelo OpenTelemetry Collector;
+- Service Graph fica configurado para usar `prometheus-ocp`, mas depende das
+  métricas `traces_service_graph_*`; o Red Hat OpenTelemetry Collector 0.152.1
+  validado no CRC não inclui connector `servicegraph`, então essa parte fica
+  documentada como evolução para TempoStack/metrics-generator ou Alloy;
 - Argo CD → aplicações/workloads via labels e filtros do dashboard upstream;
 - Zabbix → Host group/Host/Item pelo plugin `alexanderzobnin-zabbix-app`.
 
@@ -121,7 +149,7 @@ Drilldown preparado:
 ## Diagnóstico
 
 ```bash
-oc kustomize kustomize/overlays/crc >/tmp/grafana.yaml
+oc kustomize overlays/desenvolvimento >/tmp/grafana.yaml
 oc apply --dry-run=server -f /tmp/grafana.yaml
 oc -n grafana logs -l app=grafana --tail=100
 ```
@@ -138,8 +166,10 @@ reais de trace. Para exigir health check verde no Grafana, use um endpoint
 Tempo/query-frontend oficialmente suportado pelo operador ou configure acesso
 direto com os certificados mTLS exigidos pelo serviço interno.
 
-Referências: [Grafana Drilldown](https://grafana.com/docs/grafana/latest/visualizations/simplified-exploration/)
-e [Tempo datasource](https://grafana.com/docs/grafana/latest/datasources/tempo/).
+Referências: [Grafana Drilldown](https://grafana.com/docs/grafana/latest/visualizations/simplified-exploration/),
+[Tempo datasource](https://grafana.com/docs/grafana/latest/datasources/tempo/),
+[provisionamento do datasource Tempo](https://grafana.com/docs/grafana/latest/datasources/tempo/configure-tempo-data-source/provision/)
+e [Service Graph](https://grafana.com/docs/grafana/latest/datasources/tempo/service-graph/).
 Para autenticação, veja a documentação oficial de
 [Keycloak OAuth2 no Grafana](https://grafana.com/docs/grafana/latest/setup-grafana/configure-access/configure-authentication/keycloak/)
 e [Generic OAuth](https://grafana.com/docs/grafana/latest/setup-grafana/configure-access/configure-authentication/generic-oauth/).
@@ -156,12 +186,3 @@ oc apply --dry-run=client -k overlays/desenvolvimento
 `desenvolvimento` é o perfil CRC. `aceite` e `producao` usam placeholders
 `.example.invalid`; substitua por Route/TLS/Keycloak reais do ambiente antes de
 sincronizar pelo Argo CD. Mais detalhes: `docs/AMBIENTES.md`.
-
-## Automatizações preservadas e ajustadas
-
-- Mantido `.github/workflows/validate.yml`, que renderiza todos os
-  `kustomization.yaml` e roda `yamllint`.
-- Mantido e ajustado `scripts/bootstrap-grafana-oauth.sh`; agora ele descobre a
-  Route do Keycloak quando `KEYCLOAK_BASE_URL` não é informado.
-- Adicionados entrypoints `overlays/desenvolvimento`, `overlays/aceite` e
-  `overlays/producao`; o fluxo Argo CD passa a usar `overlays/desenvolvimento`.

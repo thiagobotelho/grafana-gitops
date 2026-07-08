@@ -22,8 +22,3 @@ Secrets obrigatórios:
 - `grafana/grafana-loki-token`: token ServiceAccount para Loki.
 - `grafana/grafana-tempo-token`: token criado pelo `tempo-gitops`.
 - `grafana/zabbix-datasource`: `username`, `password`.
-
-Automação preservada:
-
-- `.github/workflows/validate.yml`: renderiza todos os Kustomizations e executa `yamllint`.
-- `scripts/bootstrap-grafana-oauth.sh`: cria/atualiza o Secret OAuth descobrindo a Route do Keycloak quando `KEYCLOAK_BASE_URL` não é informado.
