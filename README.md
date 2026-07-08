@@ -122,6 +122,18 @@ oc apply --dry-run=server -f /tmp/grafana.yaml
 oc -n grafana logs -l app=grafana --tail=100
 ```
 
+### Tempo no CRC/OpenShift Local
+
+O datasource Tempo usa o gateway do `tempo-gitops` com token de ServiceAccount
+em `grafana/grafana-tempo-token`. No CRC atual, o gateway autentica a chamada,
+mas o health check do plugin Grafana pode retornar `404` no endpoint `/api/echo`
+porque esse caminho não é exposto pelo gateway multi-tenant do Tempo Operator.
+
+Valide o estado operacional do Tempo pelo Argo CD, pods, Service e por consultas
+reais de trace. Para exigir health check verde no Grafana, use um endpoint
+Tempo/query-frontend oficialmente suportado pelo operador ou configure acesso
+direto com os certificados mTLS exigidos pelo serviço interno.
+
 Referências: [Grafana Drilldown](https://grafana.com/docs/grafana/latest/visualizations/simplified-exploration/)
 e [Tempo datasource](https://grafana.com/docs/grafana/latest/datasources/tempo/).
 Para autenticação, veja a documentação oficial de
