@@ -66,6 +66,9 @@ oc -n grafana get grafana,grafanadatasource,grafanadashboard,route
 Rotação do OAuth: reexecute `scripts/bootstrap-grafana-oauth.sh` após rotacionar
 o client secret no Keycloak e sincronize/reinicie o Grafana se necessário.
 
+Os datasources usam UIDs estáveis: `prometheus-ocp`, `loki`, `tempo` e
+`zabbix`.
+
 Valide a versão efetivamente instalada:
 
 ```bash
