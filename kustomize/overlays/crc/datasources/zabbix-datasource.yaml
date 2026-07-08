@@ -28,6 +28,9 @@ spec:
     access: proxy
     url: http://zabbix-web.zabbix.svc:8080/api_jsonrpc.php
     jsonData:
+      username: "${username}"
       trends: true
       trendsFrom: 7d
       trendsRange: 4d
+    secureJsonData:
+      password: "${password}"
