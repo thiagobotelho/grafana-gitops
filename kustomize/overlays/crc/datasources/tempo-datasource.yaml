@@ -19,6 +19,7 @@ spec:
     isDefault: false
     jsonData:
       httpMethod: GET
+      tlsSkipVerify: true
       nodeGraph:
         enabled: true
       serviceMap:
