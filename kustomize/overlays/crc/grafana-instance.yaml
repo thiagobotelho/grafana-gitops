@@ -16,6 +16,23 @@ spec:
       root_url: "https://grafana-grafana.apps-crc.testing"
     auth:
       disable_login_form: "false"
+      login_cookie_name: grafana_session
+    security:
+      cookie_secure: "true"
+      cookie_samesite: lax
+      content_security_policy: "true"
+      strict_transport_security: "true"
+      x_content_type_options: "true"
+      x_xss_protection: "true"
+    analytics:
+      reporting_enabled: "false"
+      check_for_updates: "false"
+      check_for_plugin_updates: "false"
+    users:
+      viewers_can_edit: "false"
+      editors_can_admin: "false"
+    unified_alerting:
+      enabled: "true"
     auth.generic_oauth:
       enabled: "true"
       name: "Keycloak"

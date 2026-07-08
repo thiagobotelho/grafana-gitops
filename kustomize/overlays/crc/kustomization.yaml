@@ -7,6 +7,7 @@ resources:
   - rules/openshift-monitoring-access.yaml
   - rules/loki-access.yaml
   - dashboards/dashboard-openshift-overview.yaml
+  - dashboards/dashboard-argocd.yaml
   - dashboards/dashboard-keycloak-capacity.yaml
   - dashboards/dashboard-keycloak-troubleshooting.yaml
   - datasources/zabbix-datasource.yaml
