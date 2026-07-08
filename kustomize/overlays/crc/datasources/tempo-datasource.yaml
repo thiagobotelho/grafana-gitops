@@ -10,20 +10,32 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: grafana
+
+  valuesFrom:
+    - targetPath: secureJsonData.httpHeaderValue1
+      valueFrom:
+        secretKeyRef:
+          name: grafana-tempo-auth
+          key: httpHeaderValue1
+
   datasource:
     uid: tempo
     name: Tempo
     type: tempo
     access: proxy
-    url: http://tempo-tempo-monolithic.openshift-tempo-operator.svc.cluster.local:3200
+    url: https://tempo-tempo-monolithic-gateway.tempo.svc.cluster.local:8080/api/traces/v1/dev
     isDefault: false
+
     jsonData:
+      tlsSkipVerify: true
       httpMethod: GET
+
+      httpHeaderName1: Authorization
+      httpHeaderName2: X-Scope-OrgID
+
       nodeGraph:
         enabled: true
-      serviceMap:
-        datasourceUid: prometheus-ocp
-      # Correlaciona spans com os logs do mesmo serviço/trace no Loki.
+
       tracesToLogsV2:
         datasourceUid: loki
         spanStartTimeShift: "-5m"
@@ -33,22 +45,14 @@ spec:
             value: service_name
         filterByTraceID: true
         filterBySpanID: false
-      # Oferece consultas PromQL contextualizadas a partir do trace.
-      tracesToMetrics:
-        datasourceUid: prometheus-ocp
-        spanStartTimeShift: "-5m"
-        spanEndTimeShift: "5m"
-        tags:
-          - key: service.name
-            value: service_name
-        queries:
-          - name: "Taxa de requisições"
-            query: "sum(rate(traces_span_metrics_calls_total{$$__tags}[5m]))"
-          - name: "Latência p95"
-            query: "histogram_quantile(0.95, sum(rate(traces_span_metrics_duration_milliseconds_bucket{$$__tags}[5m])) by (le))"
+
       search:
         hide: false
+
       traceQuery:
         timeShiftEnabled: true
         spanStartTimeShift: "-5m"
         spanEndTimeShift: "5m"
+
+    secureJsonData:
+      httpHeaderValue2: dev
