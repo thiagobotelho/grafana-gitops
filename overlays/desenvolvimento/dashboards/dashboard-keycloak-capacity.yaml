@@ -14,5 +14,5 @@ spec:
   resyncPeriod: 1h
   datasources:
     - inputName: DS_PROMETHEUS
-      datasourceName: Prometheus-OCP
+      datasourceName: Prometheus-Apps
   url: https://raw.githubusercontent.com/keycloak/keycloak-grafana-dashboard/main/dashboards/keycloak-capacity-planning-dashboard.json
