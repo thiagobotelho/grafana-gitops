@@ -21,7 +21,7 @@ spec:
     name: Tempo
     type: tempo
     access: proxy
-    url: https://tempo-tempo-monolithic-gateway.tempo.svc.cluster.local:8080/api/traces/v1/dev
+    url: https://tempo-tempo-monolithic-gateway.tempo.svc.cluster.local:8080/api/traces/v1/dev/tempo
     isDefault: false
     jsonData:
       httpMethod: GET
