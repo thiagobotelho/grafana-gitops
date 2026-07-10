@@ -64,8 +64,8 @@ Profiles Drilldown: [docs/DRILLDOWN.md](docs/DRILLDOWN.md).
 
 ## Deploy
 
-Pré-requisitos: OpenShift, `oc`, Kustomize, User Workload Monitoring e os
-backends desejados.
+Pré-requisitos: OpenShift, `oc`, Kustomize, OpenShift Monitoring/Thanos,
+Prometheus Apps e os backends desejados.
 
 Crie o Secret OIDC consumido pelo Grafana a partir do client `grafana` existente
 no realm `observability` do Keycloak:
@@ -127,6 +127,26 @@ docs/                         documentação operacional por ambiente
 Os dashboards aplicados ficam dentro do overlay correspondente, organizados por
 solução em `overlays/<ambiente>/dashboards/{openshift,kubernetes,gitops,identity,prometheus}`.
 
+## Datasources em dashboards
+
+Dashboards importados do Grafana.com ou de URLs externas devem declarar
+explicitamente o datasource esperado no `GrafanaDashboard.spec.datasources`.
+Esse campo substitui inputs como `DS_PROMETHEUS` pelo datasource real criado
+no cluster.
+
+Padrão usado neste repositório:
+
+| Família de dashboard | Input | Datasource |
+|---|---|---|
+| Kubernetes/OpenShift/Prometheus | `DS_PROMETHEUS` | `Prometheus-OCP` |
+| Argo CD/OpenShift GitOps | `DS_PROMETHEUS` | `Prometheus-OCP` |
+| Keycloak/aplicações instrumentadas | `DS_PROMETHEUS` | `Prometheus-Apps` |
+
+Dashboards JSON locais devem preferir o UID estável do datasource
+(`prometheus-ocp`, `prometheus-apps`, `tempo`, `pyroscope`, `loki`, `zabbix`)
+em vez do nome visual. Assim a importação continua funcionando mesmo que o
+título exibido no Grafana mude.
+
 ## Dashboards provisionados
 
 | Dashboard | Origem | Datasource | Dependências |
@@ -160,8 +180,8 @@ Drilldown preparado:
   validado no CRC não inclui connector `servicegraph`, então essa parte fica
   documentada como evolução para TempoStack/metrics-generator ou Alloy;
 - Profiles Drilldown usa o datasource `pyroscope` e `tracesToProfiles` no
-  Tempo. Sem aplicações instrumentadas, o datasource fica disponível, mas não
-  haverá flamegraphs úteis;
+  Tempo em nível de serviço/namespace. Sem aplicações instrumentadas, o
+  datasource fica disponível, mas não haverá flamegraphs úteis;
 - Argo CD → aplicações/workloads via labels e filtros do dashboard upstream;
 - Zabbix → Host group/Host/Item pelo plugin `alexanderzobnin-zabbix-app`.
 
