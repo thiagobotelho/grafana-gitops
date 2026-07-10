@@ -21,7 +21,7 @@ spec:
     name: Tempo
     type: tempo
     access: proxy
-    url: https://tempo-tempo-monolithic-gateway.tempo.svc.cluster.local:8080/api/traces/v1/dev
+    url: https://tempo-tempo-monolithic-gateway.tempo.svc.cluster.local:8080/api/traces/v1/dev/tempo
     isDefault: false
     jsonData:
       httpMethod: GET
@@ -30,7 +30,10 @@ spec:
       nodeGraph:
         enabled: true
       serviceMap:
-        datasourceUid: prometheus-ocp
+        datasourceUid: prometheus-apps
+      streamingEnabled:
+        search: true
+        metrics: true
       # Correlaciona spans com os logs do mesmo serviço/trace no Loki.
       tracesToLogsV2:
         datasourceUid: loki
@@ -43,7 +46,7 @@ spec:
         filterBySpanID: false
       # Oferece consultas PromQL contextualizadas a partir do trace.
       tracesToMetrics:
-        datasourceUid: prometheus-ocp
+        datasourceUid: prometheus-apps
         spanStartTimeShift: "-5m"
         spanEndTimeShift: "5m"
         tags:
@@ -54,6 +57,18 @@ spec:
             query: "sum(rate(traces_span_metrics_calls_total{$$__tags}[5m]))"
           - name: "Latência p95"
             query: "histogram_quantile(0.95, sum(rate(traces_span_metrics_duration_milliseconds_bucket{$$__tags}[5m])) by (le))"
+      tracesToProfiles:
+        datasourceUid: pyroscope
+        tags:
+          - key: service.name
+            value: service_name
+          - key: service.namespace
+            value: service_namespace
+          - key: k8s.namespace.name
+            value: namespace
+          - key: k8s.pod.name
+            value: pod
+        profileTypeId: "process_cpu:cpu:nanoseconds:cpu:nanoseconds"
       search:
         hide: false
       traceQuery:

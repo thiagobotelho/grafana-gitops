@@ -6,12 +6,16 @@ resources:
   - grafana-instance.yaml
   - rules/openshift-monitoring-access.yaml
   - rules/loki-access.yaml
-  - dashboards/dashboard-openshift-overview.yaml
-  - dashboards/dashboard-argocd.yaml
-  - dashboards/dashboard-keycloak-capacity.yaml
-  - dashboards/dashboard-keycloak-troubleshooting.yaml
+  - folders/folders.yaml
+  - dashboards/openshift/dashboard-openshift-overview.yaml
+  - dashboards/gitops/dashboard-argocd.yaml
+  - dashboards/identity/dashboard-keycloak-capacity.yaml
+  - dashboards/identity/dashboard-keycloak-troubleshooting.yaml
+  - dashboards/kubernetes/dashboard-kubernetes-official.yaml
+  - dashboards/prometheus/dashboard-prometheus.yaml
   - datasources/zabbix-datasource.yaml
   - datasources/tempo-datasource.yaml
+  - datasources/pyroscope-datasource.yaml
   - datasources/loki-datasource.yaml
   - datasources/prometheus-datasource.yaml
 

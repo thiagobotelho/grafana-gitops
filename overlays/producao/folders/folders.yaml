@@ -1,0 +1,104 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaFolder
+metadata:
+  name: grafana-folder-openshift
+  namespace: grafana
+  annotations:
+    argocd.argoproj.io/sync-wave: "35"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  uid: openshift
+  title: OpenShift
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaFolder
+metadata:
+  name: grafana-folder-kubernetes
+  namespace: grafana
+  annotations:
+    argocd.argoproj.io/sync-wave: "35"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  uid: kubernetes
+  title: Kubernetes
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaFolder
+metadata:
+  name: grafana-folder-gitops
+  namespace: grafana
+  annotations:
+    argocd.argoproj.io/sync-wave: "35"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  uid: gitops
+  title: GitOps / Argo CD
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaFolder
+metadata:
+  name: grafana-folder-identity
+  namespace: grafana
+  annotations:
+    argocd.argoproj.io/sync-wave: "35"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  uid: identity
+  title: Identidade / Keycloak
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaFolder
+metadata:
+  name: grafana-folder-observability
+  namespace: grafana
+  annotations:
+    argocd.argoproj.io/sync-wave: "35"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  uid: observability
+  title: Observability Platform
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaFolder
+metadata:
+  name: grafana-folder-profiles
+  namespace: grafana
+  annotations:
+    argocd.argoproj.io/sync-wave: "35"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  uid: profiles
+  title: Profiles / Pyroscope
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaFolder
+metadata:
+  name: grafana-folder-zabbix
+  namespace: grafana
+  annotations:
+    argocd.argoproj.io/sync-wave: "35"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  uid: zabbix
+  title: Zabbix
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana

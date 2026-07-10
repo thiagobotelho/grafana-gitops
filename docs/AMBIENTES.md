@@ -22,3 +22,21 @@ Secrets obrigatórios:
 - `grafana/grafana-loki-token`: token ServiceAccount para Loki.
 - `grafana/grafana-tempo-token`: token criado pelo `tempo-gitops`.
 - `grafana/zabbix-datasource`: `username`, `password`.
+
+Datasources provisionados:
+
+- `prometheus-ocp`: métricas de plataforma/OpenShift.
+- `prometheus-apps`: métricas de workloads e span metrics.
+- `loki`: logs de aplicação via OpenShift Logging/LokiStack.
+- `tempo`: traces e correlações trace → logs/métricas/profiles.
+- `pyroscope`: profiles via `pyroscope-gitops`.
+- `zabbix`: hosts, items e triggers do Zabbix.
+
+Drilldown:
+
+- Traces Drilldown usa Tempo + TraceQL metrics + `prometheus-apps`.
+- Logs Drilldown pode ter endpoints 404 no gateway do LokiStack; LogQL e
+  correlação por `trace_id` continuam suportados.
+- Profiles Drilldown usa o datasource `pyroscope`; ele só mostra flamegraphs
+  quando as aplicações enviam profiles com labels compatíveis.
+- Detalhes operacionais: `docs/DRILLDOWN.md`.

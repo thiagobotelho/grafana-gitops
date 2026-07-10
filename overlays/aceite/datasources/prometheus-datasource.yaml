@@ -36,3 +36,30 @@ spec:
           urlDisplayLabel: "Abrir trace no Tempo"
     secureJsonData:
       httpHeaderValue1: "Bearer ${token}"
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: prometheus-apps
+  namespace: grafana
+  annotations:
+    argocd.argoproj.io/sync-wave: "21"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasource:
+    uid: prometheus-apps
+    name: Prometheus-Apps
+    type: prometheus
+    access: proxy
+    url: http://apps-monitoring-prometheus.observability-apps.svc:9090
+    isDefault: false
+    jsonData:
+      timeInterval: 30s
+      httpMethod: POST
+      exemplarTraceIdDestinations:
+        - name: trace_id
+          datasourceUid: tempo
+          urlDisplayLabel: "Abrir trace no Tempo"

@@ -63,5 +63,3 @@ spec:
         - name: trace_id
           datasourceUid: tempo
           urlDisplayLabel: "Abrir trace no Tempo"
-    secureJsonData:
-      httpHeaderValue1: "Bearer ${token}"
