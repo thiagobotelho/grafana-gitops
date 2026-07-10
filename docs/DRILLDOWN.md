@@ -175,12 +175,13 @@ datasource `pyroscope` é criado pelo `grafana-gitops`. Portanto, Profiles
 Drilldown fica preparado na UI, mas só exibirá flamegraphs quando aplicações ou
 Grafana Alloy enviarem profiles com labels compatíveis.
 
-No Keycloak, a stack usa o Pyroscope Java Agent em modo JFR e faz correlação
-por serviço/namespace. Isso já alimenta o Profiles Drilldown com flamegraphs
-reais. O vínculo exato de um span individual com um profile (`pyroscope.profile.id`)
-exige a ponte de span profiles do Pyroscope/OpenTelemetry para Java; como o
-Keycloak já usa tracing nativo, essa evolução deve ser homologada separadamente
-para evitar duplicidade de spans.
+No Keycloak, a stack usa o Pyroscope Java Agent com async-profiler in-process,
+saída JFR e CPU profiling. A correlação é por serviço/namespace. Isso alimenta
+o Profiles Drilldown com flamegraphs reais sem exigir SCC privilegiada. O vínculo
+exato de um span individual com um profile (`pyroscope.profile.id`) exige a
+ponte de span profiles do Pyroscope/OpenTelemetry para Java; como o Keycloak já
+usa tracing nativo, essa evolução deve ser homologada separadamente para evitar
+duplicidade de spans.
 
 ## Como habilitar dados reais no Profiles Drilldown
 
