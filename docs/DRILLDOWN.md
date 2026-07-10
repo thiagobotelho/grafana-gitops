@@ -17,7 +17,7 @@ O datasource `tempo` possui:
 
 - `nodeGraph` habilitado;
 - `serviceMap` apontando para `prometheus-apps`;
-- streaming de busca e métricas habilitado;
+- streaming de busca e métricas desabilitado no perfil CRC;
 - `tracesToLogsV2` para abrir logs do span no Loki;
 - `tracesToMetrics` para abrir PromQL contextualizado a partir do span.
 
@@ -26,8 +26,32 @@ Referências oficiais:
 - [Traces Drilldown](https://grafana.com/docs/grafana/latest/visualizations/simplified-exploration/traces/)
 - [Conceitos de traces e spans](https://grafana.com/docs/grafana/next/visualizations/simplified-exploration/traces/concepts/)
 - [Provisionamento do datasource Tempo](https://grafana.com/docs/grafana/latest/datasources/tempo/configure-tempo-data-source/provision/)
+- [Troubleshooting do datasource Tempo](https://grafana.com/docs/grafana/latest/datasources/tempo/troubleshooting/)
 - [Profiles Drilldown](https://grafana.com/docs/grafana/latest/visualizations/simplified-exploration/profiles/access/)
 - [Trace to profiles](https://grafana.com/docs/grafana/latest/datasources/tempo/configure-tempo-data-source/configure-trace-to-profiles/)
+
+## Tempo streaming no CRC
+
+O Grafana Tempo datasource suporta streaming para busca e métricas TraceQL, mas
+em ambientes self-managed isso exige Tempo compatível, `stream_over_http_enabled`
+e um caminho de rede/proxy com suporte a gRPC/HTTP2. No CRC validado, o gateway
+multitenant do Tempo Operator responde `404 text/plain` para os canais live/gRPC
+do Grafana, por exemplo:
+
+```text
+rpc error: code = Unimplemented desc = unexpected HTTP status code received from server: 404
+```
+
+Por isso `streamingEnabled.search` e `streamingEnabled.metrics` ficam
+desabilitados no `grafana-gitops`. A busca HTTP normal continua funcionando, e
+foi validada com retorno `200` no endpoint:
+
+```text
+/api/traces/v1/dev/tempo/api/search
+```
+
+Se o ambiente evoluir para um endpoint Tempo/query-frontend que suporte
+gRPC/HTTP2 ponta a ponta, o streaming pode ser reavaliado.
 
 ## Como funciona o Traces Drilldown
 

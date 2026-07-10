@@ -31,9 +31,12 @@ spec:
         enabled: true
       serviceMap:
         datasourceUid: prometheus-apps
+      # O gateway multitenant do Tempo no OpenShift responde 404 para os
+      # canais gRPC/HTTP2 de streaming usados pelo Grafana Live. As consultas
+      # HTTP padrão continuam funcionando e são mais previsíveis no CRC.
       streamingEnabled:
-        search: true
-        metrics: true
+        search: false
+        metrics: false
       # Correlaciona spans com os logs do mesmo serviço/trace no Loki.
       tracesToLogsV2:
         datasourceUid: loki

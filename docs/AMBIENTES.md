@@ -35,6 +35,8 @@ Datasources provisionados:
 Drilldown:
 
 - Traces Drilldown usa Tempo + TraceQL metrics + `prometheus-apps`.
+- Streaming do datasource Tempo fica desabilitado no CRC; o gateway
+  multitenant responde 404 para os canais gRPC/HTTP2 usados pelo Grafana Live.
 - Logs Drilldown pode ter endpoints 404 no gateway do LokiStack; LogQL e
   correlação por `trace_id` continuam suportados.
 - Profiles Drilldown usa o datasource `pyroscope`; ele só mostra flamegraphs

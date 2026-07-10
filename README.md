@@ -51,8 +51,10 @@ Os datasources possuem UIDs estáveis e correlações provisionadas:
 O Drilldown do Grafana usa exploração sem consulta manual. Para traces, ele
 depende de RED/TraceQL Metrics no Tempo e das correlações do datasource. Este
 repo provisiona `nodeGraph`, `serviceMap`, `tracesToLogsV2`, `tracesToMetrics`
-e `tracesToProfiles`, além de streaming de busca/métricas no datasource Tempo.
-No CRC, as métricas RED contínuas vêm do connector
+e `tracesToProfiles`. No CRC, o streaming de busca/métricas do datasource Tempo
+fica desabilitado porque o gateway multitenant do Tempo/OpenShift não expõe os
+canais gRPC/HTTP2 esperados pelo Grafana Live; as consultas HTTP padrão de
+trace/search continuam funcionando. As métricas RED contínuas vêm do connector
 `span_metrics` do `opentelemetry-gitops`; Service Graph só mostra dados quando
 existirem métricas de grafo no Prometheus, geradas por Tempo metrics-generator,
 Grafana Alloy ou outro pipeline compatível.
@@ -185,14 +187,26 @@ oc -n grafana logs -l app=grafana --tail=100
 ### Tempo no CRC/OpenShift Local
 
 O datasource Tempo usa o gateway do `tempo-gitops` com token de ServiceAccount
-em `grafana/grafana-tempo-token`. No CRC atual, o gateway autentica a chamada,
-mas o health check do plugin Grafana pode retornar `404` no endpoint `/api/echo`
-porque esse caminho não é exposto pelo gateway multi-tenant do Tempo Operator.
+em `grafana/grafana-tempo-token`.
+
+No CRC atual, a busca HTTP de traces funciona pelo caminho:
+
+```text
+https://tempo-tempo-monolithic-gateway.tempo.svc.cluster.local:8080/api/traces/v1/dev/tempo
+```
+
+O streaming do datasource Tempo fica desligado. Quando habilitado, o Grafana
+abre canais live/gRPC para `Search` e `MetricsQueryRange`; o gateway
+multitenant responde `404 text/plain` para esses canais, gerando mensagens como:
+
+```text
+rpc error: code = Unimplemented desc = unexpected HTTP status code received from server: 404
+```
 
 Valide o estado operacional do Tempo pelo Argo CD, pods, Service e por consultas
-reais de trace. Para exigir health check verde no Grafana, use um endpoint
-Tempo/query-frontend oficialmente suportado pelo operador ou configure acesso
-direto com os certificados mTLS exigidos pelo serviço interno.
+reais de trace. Se precisar de streaming, use um endpoint Tempo/query-frontend
+que suporte gRPC/HTTP2 ponta a ponta ou configure acesso direto com os
+certificados mTLS exigidos pelo serviço interno.
 
 Referências: [Grafana Drilldown](https://grafana.com/docs/grafana/latest/visualizations/simplified-exploration/),
 [Tempo datasource](https://grafana.com/docs/grafana/latest/datasources/tempo/),
