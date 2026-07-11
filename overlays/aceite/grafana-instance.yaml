@@ -72,6 +72,8 @@ spec:
                     secretKeyRef:
                       name: grafana-oauth
                       key: client-secret
+                - name: GF_INSTALL_PLUGINS
+                  value: grafana-llm-app
   route:
     metadata:
       annotations:

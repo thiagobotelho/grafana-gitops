@@ -175,13 +175,15 @@ datasource `pyroscope` é criado pelo `grafana-gitops`. Portanto, Profiles
 Drilldown fica preparado na UI, mas só exibirá flamegraphs quando aplicações ou
 Grafana Alloy enviarem profiles com labels compatíveis.
 
-No Keycloak, a stack usa o Pyroscope Java Agent com async-profiler in-process,
-saída JFR e CPU profiling. A correlação é por serviço/namespace. Isso alimenta
-o Profiles Drilldown com flamegraphs reais sem exigir SCC privilegiada. O vínculo
-exato de um span individual com um profile (`pyroscope.profile.id`) exige a
-ponte de span profiles do Pyroscope/OpenTelemetry para Java; como o Keycloak já
-usa tracing nativo, essa evolução deve ser homologada separadamente para evitar
-duplicidade de spans.
+No Keycloak, a stack usa o Pyroscope Java Agent com async-profiler in-process e
+saída JFR. O perfil padrão usa `wall` para capturar latência percebida e também
+habilita amostras de alocação (`alloc=512k`) e contenção de locks (`lock=10ms`).
+A correlação é por serviço/namespace. Isso alimenta o Profiles Drilldown com
+flamegraphs reais sem exigir SCC privilegiada. O vínculo exato de um span
+individual com um profile (`pyroscope.profile.id`) exige a ponte de span
+profiles do Pyroscope/OpenTelemetry para Java; como o Keycloak já usa tracing
+nativo, essa evolução deve ser homologada separadamente para evitar duplicidade
+de spans.
 
 ## Como habilitar dados reais no Profiles Drilldown
 
@@ -209,6 +211,13 @@ tracesToProfiles:
       value: namespace
   profileTypeId: process_cpu:cpu:nanoseconds:cpu:nanoseconds
 ```
+
+No provisionamento YAML oficial do Tempo datasource, o exemplo documentado usa
+`profileTypeId` singular. Por isso o link trace→profile mantém CPU como tipo
+padrão. Profile types adicionais, como wall, alloc e lock, aparecem no Profiles
+Drilldown quando forem ingeridos pelo Pyroscope; se quiser trocar o tipo padrão
+do link, altere `profileTypeId` no datasource Tempo e reinicie/sincronize o
+Grafana.
 
 Se não houver profiles para o período/serviço selecionado, o Drilldown abre sem
 resultado útil. Isso é esperado até instrumentar workloads.

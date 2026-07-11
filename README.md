@@ -27,6 +27,11 @@ consulta métricas de plataforma no Prometheus/Thanos, métricas de aplicações
 Prometheus Apps, logs no Loki, traces no Tempo, profiles no Pyroscope e dados
 operacionais no Zabbix.
 
+Os overlays instalam o plugin oficial `grafana-llm-app` via
+`GF_INSTALL_PLUGINS`. Ele habilita extensões baseadas em LLM dentro do Grafana,
+como recursos de explicação e assistência em painéis quando um provedor/modelo
+for configurado. Chaves de provedores LLM não são versionadas neste repositório.
+
 ## Correlação de observabilidade
 
 ```text
@@ -105,10 +110,22 @@ o client secret no Keycloak e sincronize/reinicie o Grafana se necessário.
 Os datasources usam UIDs estáveis: `prometheus-ocp`, `prometheus-apps`, `loki`,
 `tempo`, `pyroscope` e `zabbix`.
 
+Plugins provisionados ou esperados:
+
+| Plugin | Uso | Origem |
+|---|---|---|
+| `grafana-llm-app` | extensões LLM do Grafana | instalado por `GF_INSTALL_PLUGINS` |
+| `alexanderzobnin-zabbix-app` | datasource e dashboards Zabbix | Grafana Operator/plugin do datasource |
+| `grafana-pyroscope-app` | Profiles Drilldown | imagem/ambiente Grafana |
+| `grafana-exploretraces-app` | Traces Drilldown | imagem/ambiente Grafana |
+| `grafana-lokiexplore-app` | Logs Drilldown | imagem/ambiente Grafana |
+| `grafana-metricsdrilldown-app` | Metrics Drilldown | imagem/ambiente Grafana |
+
 Valide a versão efetivamente instalada:
 
 ```bash
 oc -n grafana exec deploy/grafana-deployment -- grafana server --version
+oc -n grafana exec deploy/grafana-deployment -- grafana cli plugins ls
 ```
 
 O nome do Deployment pode variar com a versão do Operator; descubra-o com
@@ -181,7 +198,10 @@ Drilldown preparado:
   documentada como evolução para TempoStack/metrics-generator ou Alloy;
 - Profiles Drilldown usa o datasource `pyroscope` e `tracesToProfiles` no
   Tempo em nível de serviço/namespace. Sem aplicações instrumentadas, o
-  datasource fica disponível, mas não haverá flamegraphs úteis;
+  datasource fica disponível, mas não haverá flamegraphs úteis. O link
+  `tracesToProfiles` define um tipo padrão para navegação a partir de traces;
+  tipos adicionais como wall, alloc e lock aparecem no Profiles Drilldown
+  quando a aplicação enviar esses perfis para o Pyroscope;
 - Argo CD → aplicações/workloads via labels e filtros do dashboard upstream;
 - Zabbix → Host group/Host/Item pelo plugin `alexanderzobnin-zabbix-app`.
 
@@ -232,6 +252,8 @@ Referências: [Grafana Drilldown](https://grafana.com/docs/grafana/latest/visual
 [Tempo datasource](https://grafana.com/docs/grafana/latest/datasources/tempo/),
 [provisionamento do datasource Tempo](https://grafana.com/docs/grafana/latest/datasources/tempo/configure-tempo-data-source/provision/)
 e [Service Graph](https://grafana.com/docs/grafana/latest/datasources/tempo/service-graph/).
+Para LLM no Grafana, veja o plugin oficial
+[`grafana-llm-app`](https://grafana.com/grafana/plugins/grafana-llm-app/).
 Para autenticação, veja a documentação oficial de
 [Keycloak OAuth2 no Grafana](https://grafana.com/docs/grafana/latest/setup-grafana/configure-access/configure-authentication/keycloak/)
 e [Generic OAuth](https://grafana.com/docs/grafana/latest/setup-grafana/configure-access/configure-authentication/generic-oauth/).
