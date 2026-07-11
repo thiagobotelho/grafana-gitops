@@ -33,6 +33,9 @@ spec:
       editors_can_admin: "false"
     unified_alerting:
       enabled: "true"
+    plugins:
+      preinstall: "grafana-lokiexplore-app,grafana-pyroscope-app,grafana-exploretraces-app,grafana-metricsdrilldown-app"
+      preinstall_auto_update: "false"
     auth.generic_oauth:
       enabled: "true"
       name: "Keycloak"
@@ -74,6 +77,13 @@ spec:
                       key: client-secret
                 - name: GF_INSTALL_PLUGINS
                   value: grafana-llm-app,alexanderzobnin-zabbix-app 6.4.0
+  persistentVolumeClaim:
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 5Gi
   route:
     metadata:
       annotations:

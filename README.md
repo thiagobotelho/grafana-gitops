@@ -27,6 +27,12 @@ consulta métricas de plataforma no Prometheus/Thanos, métricas de aplicações
 Prometheus Apps, logs no Loki, traces no Tempo, profiles no Pyroscope e dados
 operacionais no Zabbix.
 
+Cada overlay cria um PVC `ReadWriteOnce` de 5 GiB para persistir
+`/var/lib/grafana`. Isso mantém o banco interno SQLite, estado de plugins,
+datasources aplicados pelo Operator e dashboards após restart do pod. Sem esse
+PVC, o Grafana volta vazio depois de reiniciar e depende de uma nova
+reconciliação dos CRs `GrafanaDatasource`/`GrafanaDashboard`.
+
 Os overlays instalam os plugins `grafana-llm-app` e
 `alexanderzobnin-zabbix-app` via `GF_INSTALL_PLUGINS`. O primeiro habilita
 extensões baseadas em LLM dentro do Grafana, como recursos de explicação e
@@ -35,7 +41,9 @@ habilita o datasource Zabbix. Como app plugins do Grafana precisam ser
 habilitados depois de instalados, o overlay inclui um Job `PostSync` do Argo CD
 e o script `scripts/bootstrap-grafana-oauth.sh` também faz esse enable via API
 de forma idempotente. Chaves de provedores LLM não são versionadas neste
-repositório.
+repositório. Os apps nativos de drilldown são declarados em `[plugins].preinstall`
+e `preinstall_auto_update=false` evita que o Grafana tente atualizar plugins
+bundled, como `elasticsearch`, em diretórios read-only da imagem.
 
 ## Correlação de observabilidade
 
@@ -137,6 +145,7 @@ Valide a versão efetivamente instalada:
 ```bash
 oc -n grafana exec deploy/grafana-deployment -- grafana server --version
 oc -n grafana exec deploy/grafana-deployment -- grafana cli plugins ls
+oc -n grafana get pvc
 ```
 
 Valide o app Zabbix no Grafana:

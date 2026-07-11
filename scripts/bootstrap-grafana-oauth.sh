@@ -169,7 +169,11 @@ enable_grafana_zabbix_app_plugin() {
 
   echo "[WARN] Não foi possível habilitar ${GRAFANA_ZABBIX_APP_PLUGIN_ID} agora. HTTP ${http_code}." >&2
   if [[ -s "${response_file}" ]]; then
-    jq -r '.message // .error // empty' "${response_file}" >&2 || true
+    if jq -e . "${response_file}" >/dev/null 2>&1; then
+      jq -r '.message // .error // empty' "${response_file}" >&2 || true
+    else
+      echo "[WARN] Resposta do Grafana não estava em JSON; reexecute quando o pod estiver Ready." >&2
+    fi
   fi
   rm -f "${response_file}"
 }
