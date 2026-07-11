@@ -31,8 +31,11 @@ Os overlays instalam os plugins `grafana-llm-app` e
 `alexanderzobnin-zabbix-app` via `GF_INSTALL_PLUGINS`. O primeiro habilita
 extensões baseadas em LLM dentro do Grafana, como recursos de explicação e
 assistência em painéis quando um provedor/modelo for configurado. O segundo
-garante que o datasource Zabbix exista após qualquer rollout do pod. Chaves de
-provedores LLM não são versionadas neste repositório.
+habilita o datasource Zabbix. Como app plugins do Grafana precisam ser
+habilitados depois de instalados, o overlay inclui um Job `PostSync` do Argo CD
+e o script `scripts/bootstrap-grafana-oauth.sh` também faz esse enable via API
+de forma idempotente. Chaves de provedores LLM não são versionadas neste
+repositório.
 
 ## Correlação de observabilidade
 
@@ -82,6 +85,12 @@ cp .env.example .env
 scripts/bootstrap-grafana-oauth.sh
 ```
 
+Esse mesmo script também tenta habilitar/pinar o app plugin
+`alexanderzobnin-zabbix-app` quando a Route e o Secret admin do Grafana já
+existem. Se você executar o bootstrap antes do Grafana subir, reexecute-o após o
+deploy ou aguarde o Job `grafana-enable-zabbix-app-plugin` rodar como hook
+`PostSync` do Argo CD.
+
 O datasource Zabbix usa um usuário técnico criado pelo repositório
 `zabbix-gitops`. Se precisar criar manualmente:
 
@@ -117,7 +126,7 @@ Plugins provisionados ou esperados:
 | Plugin | Uso | Origem |
 |---|---|---|
 | `grafana-llm-app` | extensões LLM do Grafana | instalado por `GF_INSTALL_PLUGINS` |
-| `alexanderzobnin-zabbix-app` | datasource e dashboards Zabbix | instalado por `GF_INSTALL_PLUGINS` e referenciado pelo datasource |
+| `alexanderzobnin-zabbix-app` | datasource e dashboards Zabbix | instalado por `GF_INSTALL_PLUGINS` e habilitado pelo hook/script |
 | `grafana-pyroscope-app` | Profiles Drilldown | imagem/ambiente Grafana |
 | `grafana-exploretraces-app` | Traces Drilldown | imagem/ambiente Grafana |
 | `grafana-lokiexplore-app` | Logs Drilldown | imagem/ambiente Grafana |
@@ -129,6 +138,15 @@ Valide a versão efetivamente instalada:
 oc -n grafana exec deploy/grafana-deployment -- grafana server --version
 oc -n grafana exec deploy/grafana-deployment -- grafana cli plugins ls
 ```
+
+Valide o app Zabbix no Grafana:
+
+```bash
+scripts/bootstrap-grafana-oauth.sh
+```
+
+O script não imprime secrets. Ele usa a API do Grafana apenas para habilitar o
+plugin quando `GRAFANA_ENABLE_ZABBIX_APP_PLUGIN=true`.
 
 O nome do Deployment pode variar com a versão do Operator; descubra-o com
 `oc -n grafana get deploy`.
@@ -256,6 +274,9 @@ Referências: [Grafana Drilldown](https://grafana.com/docs/grafana/latest/visual
 e [Service Graph](https://grafana.com/docs/grafana/latest/datasources/tempo/service-graph/).
 Para LLM no Grafana, veja o plugin oficial
 [`grafana-llm-app`](https://grafana.com/grafana/plugins/grafana-llm-app/).
+Para o enable automático de app plugins, veja o provisionamento oficial de
+plugins do Grafana:
+<https://grafana.com/docs/grafana/latest/administration/provisioning/#plugins>.
 Para autenticação, veja a documentação oficial de
 [Keycloak OAuth2 no Grafana](https://grafana.com/docs/grafana/latest/setup-grafana/configure-access/configure-authentication/keycloak/)
 e [Generic OAuth](https://grafana.com/docs/grafana/latest/setup-grafana/configure-access/configure-authentication/generic-oauth/).

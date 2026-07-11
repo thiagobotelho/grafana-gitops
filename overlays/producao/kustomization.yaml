@@ -13,6 +13,7 @@ resources:
   - dashboards/identity/dashboard-keycloak-troubleshooting.yaml
   - dashboards/kubernetes/dashboard-kubernetes-official.yaml
   - dashboards/prometheus/dashboard-prometheus.yaml
+  - jobs/enable-zabbix-app-plugin.yaml
   - datasources/zabbix-datasource.yaml
   - datasources/tempo-datasource.yaml
   - datasources/pyroscope-datasource.yaml
