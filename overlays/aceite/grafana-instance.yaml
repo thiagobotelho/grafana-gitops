@@ -60,6 +60,9 @@ spec:
       role_attribute_path: "contains(groups[*], '/observability/grafana-grafana-admins') && 'GrafanaAdmin' || contains(groups[*], '/observability/grafana-admins') && 'Admin' || contains(groups[*], '/observability/grafana-editors') && 'Editor' || contains(groups[*], '/observability/grafana-viewers') && 'Viewer' || 'None'"
   deployment:
     spec:
+      revisionHistoryLimit: 2
+      strategy:
+        type: Recreate
       template:
         spec:
           volumes:
