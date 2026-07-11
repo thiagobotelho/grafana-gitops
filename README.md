@@ -27,10 +27,12 @@ consulta métricas de plataforma no Prometheus/Thanos, métricas de aplicações
 Prometheus Apps, logs no Loki, traces no Tempo, profiles no Pyroscope e dados
 operacionais no Zabbix.
 
-Os overlays instalam o plugin oficial `grafana-llm-app` via
-`GF_INSTALL_PLUGINS`. Ele habilita extensões baseadas em LLM dentro do Grafana,
-como recursos de explicação e assistência em painéis quando um provedor/modelo
-for configurado. Chaves de provedores LLM não são versionadas neste repositório.
+Os overlays instalam os plugins `grafana-llm-app` e
+`alexanderzobnin-zabbix-app` via `GF_INSTALL_PLUGINS`. O primeiro habilita
+extensões baseadas em LLM dentro do Grafana, como recursos de explicação e
+assistência em painéis quando um provedor/modelo for configurado. O segundo
+garante que o datasource Zabbix exista após qualquer rollout do pod. Chaves de
+provedores LLM não são versionadas neste repositório.
 
 ## Correlação de observabilidade
 
@@ -115,7 +117,7 @@ Plugins provisionados ou esperados:
 | Plugin | Uso | Origem |
 |---|---|---|
 | `grafana-llm-app` | extensões LLM do Grafana | instalado por `GF_INSTALL_PLUGINS` |
-| `alexanderzobnin-zabbix-app` | datasource e dashboards Zabbix | Grafana Operator/plugin do datasource |
+| `alexanderzobnin-zabbix-app` | datasource e dashboards Zabbix | instalado por `GF_INSTALL_PLUGINS` e referenciado pelo datasource |
 | `grafana-pyroscope-app` | Profiles Drilldown | imagem/ambiente Grafana |
 | `grafana-exploretraces-app` | Traces Drilldown | imagem/ambiente Grafana |
 | `grafana-lokiexplore-app` | Logs Drilldown | imagem/ambiente Grafana |

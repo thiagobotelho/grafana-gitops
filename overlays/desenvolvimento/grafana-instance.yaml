@@ -73,7 +73,7 @@ spec:
                       name: grafana-oauth
                       key: client-secret
                 - name: GF_INSTALL_PLUGINS
-                  value: grafana-llm-app
+                  value: grafana-llm-app,alexanderzobnin-zabbix-app 6.4.0
   route:
     metadata:
       annotations:
