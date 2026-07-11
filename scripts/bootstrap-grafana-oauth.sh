@@ -124,11 +124,13 @@ if [[ -z "${client_secret}" ]]; then
   exit 1
 fi
 
-"${OC_BIN}" create namespace "${GRAFANA_NAMESPACE}" --dry-run=client -o yaml | "${OC_BIN}" apply -f - >/dev/null
+"${OC_BIN}" create namespace "${GRAFANA_NAMESPACE}" --dry-run=client -o yaml | "${OC_BIN}" apply --server-side -f - >/dev/null
 "${OC_BIN}" -n "${GRAFANA_NAMESPACE}" create secret generic "${GRAFANA_OAUTH_SECRET}" \
   --from-literal=client-id="${KEYCLOAK_GRAFANA_CLIENT_ID}" \
   --from-literal=client-secret="${client_secret}" \
-  --dry-run=client -o yaml | "${OC_BIN}" apply -f - >/dev/null
+  --dry-run=client -o yaml | "${OC_BIN}" apply --server-side -f - >/dev/null
+"${OC_BIN}" -n "${GRAFANA_NAMESPACE}" annotate secret "${GRAFANA_OAUTH_SECRET}" \
+  kubectl.kubernetes.io/last-applied-configuration- >/dev/null 2>&1 || true
 
 enable_grafana_zabbix_app_plugin() {
   local grafana_base_url grafana_user grafana_password response_file http_code

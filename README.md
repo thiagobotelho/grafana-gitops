@@ -103,11 +103,11 @@ O datasource Zabbix usa um usuário técnico criado pelo repositório
 `zabbix-gitops`. Se precisar criar manualmente:
 
 ```bash
-oc create namespace grafana --dry-run=client -o yaml | oc apply -f -
+oc create namespace grafana --dry-run=client -o yaml | oc apply --server-side -f -
 oc -n grafana create secret generic zabbix-datasource \
   --from-literal=username="${ZABBIX_USER}" \
   --from-literal=password="${ZABBIX_PASSWORD}" \
-  --dry-run=client -o yaml | oc apply -f -
+  --dry-run=client -o yaml | oc apply --server-side -f -
 
 oc apply -k overlays/desenvolvimento
 oc -n grafana get grafana,grafanadatasource,grafanadashboard,route
