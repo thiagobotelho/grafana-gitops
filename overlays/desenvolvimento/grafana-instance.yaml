@@ -58,7 +58,7 @@ spec:
       signout_redirect_url: "https://keycloak-dev.apps-crc.testing/realms/observability/protocol/openid-connect/logout?client_id=grafana&post_logout_redirect_uri=https%3A%2F%2Fgrafana-grafana.apps-crc.testing%2F"
       role_attribute_strict: "true"
       allow_assign_grafana_admin: "true"
-      role_attribute_path: "contains(groups[*], '/observability/grafana-grafana-admins') && 'GrafanaAdmin' || contains(groups[*], '/observability/grafana-admins') && 'Admin' || contains(groups[*], '/observability/grafana-editors') && 'Editor' || contains(groups[*], '/observability/grafana-viewers') && 'Viewer' || 'None'"
+      role_attribute_path: "contains(groups[*], '/observability/grafana-grafana-admins') && 'GrafanaAdmin' || contains(groups[*], '/observability/grafana-admins') && 'Admin' || contains(groups[*], '/observability/grafana-editors') && 'Editor' || contains(groups[*], '/observability/grafana-viewers') && 'Viewer' || ''"
   deployment:
     spec:
       revisionHistoryLimit: 2
