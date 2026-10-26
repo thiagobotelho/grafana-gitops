@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-issuer-ca
+  namespace: grafana
+data:
+  ca.crt: '-----BEGIN CERTIFICATE-----
+
+    MIIDDDCCAfSgAwIBAgIBATANBgkqhkiG9w0BAQsFADAmMSQwIgYDVQQDDBtpbmdy
+
+    ZXNzLW9wZXJhdG9yQDE3ODE0OTMwNzYwHhcNMjYwNjE1MDMxMTE2WhcNMjgwNjE0
+
+    MDMxMTE3WjAmMSQwIgYDVQQDDBtpbmdyZXNzLW9wZXJhdG9yQDE3ODE0OTMwNzYw
+
+    ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDMPtoilYoUOp/IwZUy06VK
+
+    8Tl/5/kV0vscRP+vdq6eVz9lvHU3Pv2HKYMeS1YdvMZmBQ9+X5ys9iFFRAhBvxKu
+
+    6qb64zi0jnkrAffWXLCQ7L8u5ZvFskjseJbJ4HZT4bI93zyw9mwjLY5jKXz7SNkx
+
+    OLMEaZAStRNzpqZ7nwEyxUTsei9a1FJ2hrzzgffheR0thD073UDtX+j4iSzg2aIR
+
+    Gataxy6JvlnK9dTs5RGobP07PHLAwYj9lHD+J+MvhDFFM9+Re3NWUZdu5U8p8K6f
+
+    /iHEpNvuA7pwP/tMz5RsfW7X6BX4mka+CZ8QpPx3QQFK+TNmCMqx2tHVexxA3RUd
+
+    AgMBAAGjRTBDMA4GA1UdDwEB/wQEAwICpDASBgNVHRMBAf8ECDAGAQH/AgEAMB0G
+
+    A1UdDgQWBBSrIPMi2v0yibimNV7x1Ue3jXYwIDANBgkqhkiG9w0BAQsFAAOCAQEA
+
+    M0TRnurj9761lomhzajejtwVuzyBTYrp1H1Tro4i9R62Fy4UckYrCOTDPoy1szNF
+
+    4w9Nq82d2+V37avyA9wwcZu5lPMBhf+d9+xNEISfsbbVJIsSKgxIPXK7Z6ppnWcM
+
+    X0rViq1J+taczCniYCjpoSaMwIs5xX604EqHVJEfW9yJs6/v+ElIXvU5iNY3N6NZ
+
+    Pagg9QiiZr40oS9pqxo3MVT0ovh9evA+uPoejZ1nnqioD5BOPHBERROKw8V86wnY
+
+    T4gDsVhsbz8wmIez/8E0JOm8nm1Etnt5iimadtDGXOpCJ4pf6FNODScsfo/Re9kY
+
+    vmusdmgjTMSrnM82gdq03w==
+
+    -----END CERTIFICATE-----
+
+    '
