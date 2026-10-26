@@ -41,5 +41,6 @@ spec:
           url: "$${__value.raw}"
           urlDisplayLabel: "Abrir trace"
     secureJsonData:
+      tlsCACert: "${service-ca.crt}"
       httpHeaderValue1: "Bearer ${token}"
       httpHeaderValue2: application

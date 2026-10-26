@@ -41,6 +41,7 @@ spec:
           datasourceUid: tempo
           urlDisplayLabel: "Abrir trace no Tempo"
     secureJsonData:
+      tlsCACert: "${service-ca.crt}"
       httpHeaderValue1: "Bearer ${token}"
 ---
 apiVersion: grafana.integreatly.org/v1beta1

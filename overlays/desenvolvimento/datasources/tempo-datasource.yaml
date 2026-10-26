@@ -83,4 +83,5 @@ spec:
         spanStartTimeShift: "-5m"
         spanEndTimeShift: "5m"
     secureJsonData:
+      tlsCACert: "${service-ca.crt}"
       httpHeaderValue1: "Bearer ${token}"
