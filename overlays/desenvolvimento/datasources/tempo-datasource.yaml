@@ -8,6 +8,11 @@ metadata:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   valuesFrom:
+    - targetPath: secureJsonData.tlsCACert
+      valueFrom:
+        configMapKeyRef:
+          name: openshift-service-ca.crt
+          key: service-ca.crt
     - targetPath: secureJsonData.httpHeaderValue1
       valueFrom:
         secretKeyRef:
@@ -25,7 +30,8 @@ spec:
     isDefault: false
     jsonData:
       httpMethod: GET
-      tlsSkipVerify: true
+      tlsSkipVerify: false
+      tlsAuthWithCACert: true
       httpHeaderName1: Authorization
       nodeGraph:
         enabled: true

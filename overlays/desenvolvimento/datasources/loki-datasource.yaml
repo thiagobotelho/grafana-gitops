@@ -8,6 +8,11 @@ metadata:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   valuesFrom:
+    - targetPath: secureJsonData.tlsCACert
+      valueFrom:
+        configMapKeyRef:
+          name: openshift-service-ca.crt
+          key: service-ca.crt
     - targetPath: secureJsonData.httpHeaderValue1
       valueFrom:
         secretKeyRef:
@@ -23,7 +28,8 @@ spec:
     access: proxy
     url: https://loki-gateway-http.openshift-logging.svc.cluster.local:8080/api/logs/v1/application
     jsonData:
-      tlsSkipVerify: true
+      tlsSkipVerify: false
+      tlsAuthWithCACert: true
       timeout: 60
       httpHeaderName1: Authorization
       httpHeaderName2: X-Scope-OrgID

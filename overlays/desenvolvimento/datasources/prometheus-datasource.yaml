@@ -8,6 +8,11 @@ metadata:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   valuesFrom:
+    - targetPath: secureJsonData.tlsCACert
+      valueFrom:
+        configMapKeyRef:
+          name: openshift-service-ca.crt
+          key: service-ca.crt
     - targetPath: "secureJsonData.httpHeaderValue1"
       valueFrom:
         secretKeyRef:
@@ -26,7 +31,8 @@ spec:
     url: https://thanos-querier.openshift-monitoring.svc:9091
     jsonData:
       # O endpoint usa a CA interna do OpenShift; o token fica em Secret.
-      tlsSkipVerify: true
+      tlsSkipVerify: false
+      tlsAuthWithCACert: true
       httpHeaderName1: "Authorization"
       timeInterval: 30s
       # Torna exemplares OpenMetrics clicáveis e abre o trace no Tempo.
