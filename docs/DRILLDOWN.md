@@ -3,7 +3,7 @@
 Este documento registra como o Grafana Drilldown fica habilitado nesta stack e
 quais limites existem no CRC/OpenShift Local.
 
-## Estado atual
+## Configuração dos datasources
 
 O Grafana é provisionado com datasources estáveis:
 
@@ -34,17 +34,14 @@ Referências oficiais:
 
 O Grafana Tempo datasource suporta streaming para busca e métricas TraceQL, mas
 em ambientes self-managed isso exige Tempo compatível, `stream_over_http_enabled`
-e um caminho de rede/proxy com suporte a gRPC/HTTP2. No CRC validado, o gateway
-multitenant do Tempo Operator responde `404 text/plain` para os canais live/gRPC
-do Grafana, por exemplo:
+e um caminho de rede/proxy com suporte a gRPC/HTTP2. Se o gateway não expuser os canais live/gRPC exigidos pelo Grafana, a comunicação pode retornar erro, por exemplo:
 
 ```text
 rpc error: code = Unimplemented desc = unexpected HTTP status code received from server: 404
 ```
 
 Por isso `streamingEnabled.search` e `streamingEnabled.metrics` ficam
-desabilitados no `grafana-gitops`. A busca HTTP normal continua funcionando, e
-foi validada com retorno `200` no endpoint:
+desabilitados no `grafana-gitops`. Para verificar a busca HTTP, consulte o endpoint configurado e confira o retorno:
 
 ```text
 /api/traces/v1/dev/tempo/api/search
@@ -91,36 +88,30 @@ Ela depende de dados bem instrumentados:
 - TraceQL metrics funcionando no Tempo;
 - métricas de grafo, quando se espera visualizar Service Graph completo.
 
-No CRC atual, o `opentelemetry-gitops` gera métricas RED via `span_metrics`.
+O `opentelemetry-gitops` configura métricas RED via `span_metrics`.
 Isso alimenta dashboards e links `tracesToMetrics`. O Service Graph completo
 depende de métricas `traces_service_graph_*`, geradas por Tempo
-metrics-generator, Grafana Alloy ou outro pipeline compatível. O Red Hat
-OpenTelemetry Collector validado no CRC expõe `span_metrics`, mas não expõe
-connector `servicegraph`.
+metrics-generator, Grafana Alloy ou outro pipeline compatível. Confira se a imagem do Collector disponibiliza o connector necessário antes de habilitar Service Graph.
 
-## Erros analisados no Trace Drilldown
+## Diagnosticar erros de consulta no Traces Drilldown
 
-Foram observados erros 400 no Grafana/Tempo com queries geradas pelo Drilldown,
-por exemplo:
+Consultas com variáveis ausentes podem gerar erros HTTP 400, como:
 
 ```text
 unknown identifier: undefined
 syntax error: unexpected }
 ```
 
-As queries problemáticas continham variáveis vazias, como:
+Exemplos de consultas inválidas com variáveis vazias:
 
 ```text
 {nestedSetParent<0 && true && undefined != nil} | rate() by(undefined)
 {nestedSetParent<0 && true && duration > }
 ```
 
-Isso indica que o backend Tempo não estava indisponível; o Tempo respondeu 200
-para queries TraceQL válidas no mesmo período. O problema é a montagem de query
-com estado incompleto do Drilldown, geralmente por URL/filtros vazios ou uma
-incompatibilidade fina entre versão do Grafana/app e estado salvo da tela.
+Compare a consulta gerada pela interface com uma consulta TraceQL válida. Um HTTP 400 por erro de sintaxe exige corrigir filtros e variáveis; investigue disponibilidade e conectividade separadamente.
 
-Workaround operacional:
+Procedimento de diagnóstico:
 
 1. Abra Drilldown > Traces a partir do menu, não de um link antigo.
 2. Selecione datasource `Tempo`.
@@ -261,3 +252,4 @@ oc -n observability-apps get monitoringstack,pods,svc,pvc
 - Homologar uma matriz de versões Grafana/app Drilldown/Tempo antes de produção.
 - Adicionar dashboards que mostrem a jornada
   `Namespace -> Workload -> Pod -> Trace -> Logs -> Profile`.
+
