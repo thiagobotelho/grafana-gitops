@@ -329,3 +329,9 @@ oc apply --dry-run=client -k overlays/desenvolvimento
 `desenvolvimento` é o perfil CRC. `aceite` e `producao` usam placeholders
 `.example.invalid`; substitua por Route/TLS/Keycloak reais do ambiente antes de
 sincronizar pelo Argo CD. Mais detalhes: `docs/AMBIENTES.md`.
+
+## Dashboard de Service Mesh no CRC
+
+O overlay desenvolvimento propõe a pasta Service Mesh e o dashboard **OpenShift Service Mesh — CRC Lab**, com o datasource já existente `prometheus-apps`. Ele inclui RPS, respostas, latência p50/p95/p99, origem/destino, mTLS e ausência de telemetria. As consultas HTTP usam reporter destination para evitar contagem dupla.
+
+A implantação do Mesh e o preenchimento real dos painéis ainda estão pendentes. Confirmar nomes/unidade das séries e labels no scrape. O conteúdo de referência fica em [service-mesh-gitops](https://github.com/thiagobotelho/service-mesh-gitops/blob/main/docs/GRAFANA.md); manter somente este repositório como proprietário dos CRs quando a integração for aprovada. Os assets de referência não devem ser aplicados em paralelo. Nenhum ajuste de Keycloak ou autenticação é necessário.

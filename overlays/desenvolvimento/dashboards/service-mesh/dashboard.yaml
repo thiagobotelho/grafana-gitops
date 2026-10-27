@@ -1,0 +1,59 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: service-mesh-crc
+  namespace: grafana
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folderRef: grafana-folder-service-mesh
+  resyncPeriod: 1h
+  json: '{"uid":"openshift-service-mesh-crc","title":"OpenShift Service Mesh — CRC
+    Lab","schemaVersion":39,"version":1,"timezone":"browser","refresh":"30s","tags":["openshift","service-mesh","crc"],"time":{"from":"now-15m","to":"now"},"templating":{"list":[{"name":"namespace","label":"Namespace","type":"query","datasource":{"type":"prometheus","uid":"prometheus-apps"},"query":"label_values(istio_requests_total{reporter=\"destination\"},destination_workload_namespace)","refresh":1,"includeAll":true,"allValue":".*","multi":true,"current":{"text":"Todos","value":"$__all"}},{"name":"source_workload","label":"Origem","type":"query","datasource":{"type":"prometheus","uid":"prometheus-apps"},"query":"label_values(istio_requests_total{destination_workload_namespace=~\"$namespace\",reporter=\"destination\"},source_workload)","refresh":1,"includeAll":true,"allValue":".*","multi":true,"current":{"text":"Todos","value":"$__all"}},{"name":"destination_workload","label":"Destino","type":"query","datasource":{"type":"prometheus","uid":"prometheus-apps"},"query":"label_values(istio_requests_total{destination_workload_namespace=~\"$namespace\",reporter=\"destination\"},destination_workload)","refresh":1,"includeAll":true,"allValue":".*","multi":true,"current":{"text":"Todos","value":"$__all"}}]},"panels":[{"id":1,"title":"Requisições
+    por destino","type":"timeseries","description":"","datasource":{"type":"prometheus","uid":"prometheus-apps"},"gridPos":{"h":8,"w":12,"x":0,"y":0},"targets":[{"expr":"sum
+    by (destination_workload) (rate(istio_requests_total{destination_workload_namespace=~\"$namespace\",reporter=\"destination\",source_workload=~\"$source_workload\",destination_workload=~\"$destination_workload\"}[$__rate_interval]))","legendFormat":"{{destination_workload}}","refId":"A"}],"fieldConfig":{"defaults":{"unit":"reqps","noValue":"Sem
+    dados"},"overrides":[]},"options":{"legend":{"displayMode":"list","placement":"bottom"}}},{"id":2,"title":"Respostas
+    HTTP e bloqueios 403","type":"timeseries","description":"403 depende da classificação/telemetria
+    do Envoy. Bloqueios no OVN não geram necessariamente métricas HTTP.","datasource":{"type":"prometheus","uid":"prometheus-apps"},"gridPos":{"h":8,"w":12,"x":12,"y":0},"targets":[{"expr":"sum
+    by (response_code) (rate(istio_requests_total{destination_workload_namespace=~\"$namespace\",reporter=\"destination\",source_workload=~\"$source_workload\",destination_workload=~\"$destination_workload\"}[$__rate_interval]))","legendFormat":"HTTP
+    {{response_code}}","refId":"A"}],"fieldConfig":{"defaults":{"unit":"reqps","noValue":"Sem
+    dados"},"overrides":[]},"options":{"legend":{"displayMode":"list","placement":"bottom"}}},{"id":3,"title":"Latência
+    p50","type":"timeseries","description":"","datasource":{"type":"prometheus","uid":"prometheus-apps"},"gridPos":{"h":8,"w":12,"x":0,"y":8},"targets":[{"expr":"histogram_quantile(0.5,
+    sum by (le, destination_workload) (rate(istio_request_duration_milliseconds_bucket{destination_workload_namespace=~\"$namespace\",reporter=\"destination\",source_workload=~\"$source_workload\",destination_workload=~\"$destination_workload\"}[$__rate_interval])))","legendFormat":"{{destination_workload}}","refId":"A"}],"fieldConfig":{"defaults":{"unit":"ms","noValue":"Sem
+    dados"},"overrides":[]},"options":{"legend":{"displayMode":"list","placement":"bottom"}}},{"id":4,"title":"Latência
+    p95","type":"timeseries","description":"","datasource":{"type":"prometheus","uid":"prometheus-apps"},"gridPos":{"h":8,"w":12,"x":12,"y":8},"targets":[{"expr":"histogram_quantile(0.95,
+    sum by (le, destination_workload) (rate(istio_request_duration_milliseconds_bucket{destination_workload_namespace=~\"$namespace\",reporter=\"destination\",source_workload=~\"$source_workload\",destination_workload=~\"$destination_workload\"}[$__rate_interval])))","legendFormat":"{{destination_workload}}","refId":"A"}],"fieldConfig":{"defaults":{"unit":"ms","noValue":"Sem
+    dados"},"overrides":[]},"options":{"legend":{"displayMode":"list","placement":"bottom"}}},{"id":5,"title":"Latência
+    p99","type":"timeseries","description":"","datasource":{"type":"prometheus","uid":"prometheus-apps"},"gridPos":{"h":8,"w":12,"x":0,"y":16},"targets":[{"expr":"histogram_quantile(0.99,
+    sum by (le, destination_workload) (rate(istio_request_duration_milliseconds_bucket{destination_workload_namespace=~\"$namespace\",reporter=\"destination\",source_workload=~\"$source_workload\",destination_workload=~\"$destination_workload\"}[$__rate_interval])))","legendFormat":"{{destination_workload}}","refId":"A"}],"fieldConfig":{"defaults":{"unit":"ms","noValue":"Sem
+    dados"},"overrides":[]},"options":{"legend":{"displayMode":"list","placement":"bottom"}}},{"id":6,"title":"Tráfego
+    por identidade e destino","type":"timeseries","description":"","datasource":{"type":"prometheus","uid":"prometheus-apps"},"gridPos":{"h":8,"w":12,"x":12,"y":16},"targets":[{"expr":"sum
+    by (source_workload,destination_workload,response_code) (rate(istio_requests_total{destination_workload_namespace=~\"$namespace\",reporter=\"destination\",source_workload=~\"$source_workload\",destination_workload=~\"$destination_workload\"}[$__rate_interval]))","legendFormat":"{{source_workload}}
+    → {{destination_workload}}: {{response_code}}","refId":"A"}],"fieldConfig":{"defaults":{"unit":"reqps","noValue":"Sem
+    dados"},"overrides":[]},"options":{"legend":{"displayMode":"list","placement":"bottom"}}},{"id":7,"title":"Principais
+    destinos","type":"timeseries","description":"","datasource":{"type":"prometheus","uid":"prometheus-apps"},"gridPos":{"h":8,"w":12,"x":0,"y":24},"targets":[{"expr":"topk(5,sum
+    by (destination_service_name) (rate(istio_requests_total{destination_workload_namespace=~\"$namespace\",reporter=\"destination\",source_workload=~\"$source_workload\",destination_workload=~\"$destination_workload\"}[$__rate_interval])))","legendFormat":"{{destination_service_name}}","refId":"A"}],"fieldConfig":{"defaults":{"unit":"reqps","noValue":"Sem
+    dados"},"overrides":[]},"options":{"legend":{"displayMode":"list","placement":"bottom"}}},{"id":8,"title":"Requisições
+    com mTLS","type":"timeseries","description":"Válido apenas se a série expuser
+    connection_security_policy no reporter destination. Ausência não comprova plaintext.","datasource":{"type":"prometheus","uid":"prometheus-apps"},"gridPos":{"h":8,"w":12,"x":12,"y":24},"targets":[{"expr":"sum
+    by (source_workload,connection_security_policy) (rate(istio_requests_total{destination_workload_namespace=~\"$namespace\",reporter=\"destination\",source_workload=~\"$source_workload\",destination_workload=~\"$destination_workload\",connection_security_policy=\"mutual_tls\"}[$__rate_interval]))","legendFormat":"{{source_workload}}
+    {{connection_security_policy}}","refId":"A"}],"fieldConfig":{"defaults":{"unit":"reqps","noValue":"Sem
+    dados"},"overrides":[]},"options":{"legend":{"displayMode":"list","placement":"bottom"}}},{"id":9,"title":"Saúde
+    do scrape de proxies e Istiod","type":"timeseries","description":"","datasource":{"type":"prometheus","uid":"prometheus-apps"},"gridPos":{"h":8,"w":12,"x":0,"y":32},"targets":[{"expr":"up{namespace=~\"$namespace|istio-system\",job=~\".*mesh.*|.*istiod.*|.*envoy.*\"}","legendFormat":"{{namespace}}
+    {{pod}} {{job}}","refId":"A"}],"fieldConfig":{"defaults":{"unit":"short","noValue":"Sem
+    dados"},"overrides":[]},"options":{"legend":{"displayMode":"list","placement":"bottom"}}},{"id":10,"title":"Ausência
+    de métricas de requisição","type":"stat","description":"1 indica ausência de séries
+    para o namespace; ausência de valor significa que há séries. Consulte também up
+    e targets.","datasource":{"type":"prometheus","uid":"prometheus-apps"},"gridPos":{"h":8,"w":12,"x":12,"y":32},"targets":[{"expr":"absent(istio_requests_total{destination_workload_namespace=~\"$namespace\",reporter=\"destination\"})","legendFormat":"Ausência
+    de séries","refId":"A"}],"fieldConfig":{"defaults":{"unit":"short","noValue":"Sem
+    dados"},"overrides":[]},"options":{"legend":{"displayMode":"list","placement":"bottom"}}},{"id":11,"title":"Proxies
+    conectados ao Istiod","type":"timeseries","description":"Somente se a versão expuser
+    pilot_xds; confirmar na consulta de descoberta.","datasource":{"type":"prometheus","uid":"prometheus-apps"},"gridPos":{"h":8,"w":12,"x":0,"y":40},"targets":[{"expr":"pilot_xds{namespace=\"istio-system\"}","legendFormat":"{{pod}}","refId":"A"}],"fieldConfig":{"defaults":{"unit":"short","noValue":"Sem
+    dados"},"overrides":[]},"options":{"legend":{"displayMode":"list","placement":"bottom"}}},{"id":12,"title":"Latência
+    média HTTP","type":"timeseries","description":"","datasource":{"type":"prometheus","uid":"prometheus-apps"},"gridPos":{"h":8,"w":12,"x":12,"y":40},"targets":[{"expr":"sum(rate(istio_request_duration_milliseconds_sum{destination_workload_namespace=~\"$namespace\",reporter=\"destination\",source_workload=~\"$source_workload\",destination_workload=~\"$destination_workload\"}[$__rate_interval]))
+    / sum(rate(istio_request_duration_milliseconds_count{destination_workload_namespace=~\"$namespace\",reporter=\"destination\",source_workload=~\"$source_workload\",destination_workload=~\"$destination_workload\"}[$__rate_interval]))","legendFormat":"Média","refId":"A"}],"fieldConfig":{"defaults":{"unit":"ms","noValue":"Sem
+    dados"},"overrides":[]},"options":{"legend":{"displayMode":"list","placement":"bottom"}}}],"links":[{"title":"Explorar
+    traces no Tempo (módulo opcional)","url":"/explore?left=%7B%22datasource%22%3A%22tempo%22%7D","targetBlank":true}]}'
