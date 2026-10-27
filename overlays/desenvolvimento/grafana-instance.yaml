@@ -2,6 +2,7 @@ apiVersion: grafana.integreatly.org/v1beta1
 kind: Grafana
 metadata:
   name: grafana
+  # Namespace deste objeto; não confundir com seleção de namespaces de origem.
   namespace: grafana
   labels:
     dashboards: grafana
@@ -71,6 +72,7 @@ spec:
               configMap:
                 name: keycloak-issuer-ca
             - name: grafana-data
+              # Dados persistentes exigem capacidade, classe de armazenamento e backup.
               persistentVolumeClaim:
                 claimName: grafana-pvc
           containers:
@@ -105,6 +107,7 @@ spec:
         argocd.argoproj.io/sync-wave: "11"
     spec:
       host: grafana-grafana.apps-crc.testing
+      # TLS define transporte e confiança; não desabilitar validação para contornar erros.
       tls:
         insecureEdgeTerminationPolicy: Redirect
         termination: edge

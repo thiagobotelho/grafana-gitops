@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: keycloak-issuer-ca
+  # Namespace deste objeto; não confundir com seleção de namespaces de origem.
   namespace: grafana
 data:
   ca.crt: '-----BEGIN CERTIFICATE-----

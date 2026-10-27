@@ -2,6 +2,7 @@ apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaFolder
 metadata:
   name: grafana-folder-openshift
+  # Namespace deste objeto; não confundir com seleção de namespaces de origem.
   namespace: grafana
   annotations:
     argocd.argoproj.io/sync-wave: "35"
