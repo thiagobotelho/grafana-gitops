@@ -3,6 +3,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: grafana-monitoring
+  # Namespace deste objeto; não confundir com seleção de namespaces de origem.
   namespace: grafana
 ---
 apiVersion: v1
@@ -18,10 +19,12 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: grafana-cluster-monitoring-view
+# Referência de permissão; este vínculo não cria identidades no provedor.
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: cluster-monitoring-view
+# Identidades que recebem as permissões declaradas pelo papel referenciado.
 subjects:
   - kind: ServiceAccount
     name: grafana-monitoring

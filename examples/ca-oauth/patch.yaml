@@ -1,0 +1,26 @@
+# Patch didático: usar no overlay do ambiente após criar o ConfigMap de CA.
+# ConfigMap grafana-oidc-ca deve conter ca.crt com a cadeia PEM pública confiável.
+apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
+metadata:
+  name: grafana
+  namespace: grafana
+spec:
+  config:
+    auth.generic_oauth:
+      tls_skip_verify_insecure: "false"
+      tls_client_ca: /etc/grafana/oidc-ca/ca.crt
+  deployment:
+    spec:
+      template:
+        spec:
+          volumes:
+          - name: oidc-ca
+            configMap:
+              name: grafana-oidc-ca
+          containers:
+          - name: grafana
+            volumeMounts:
+            - name: oidc-ca
+              mountPath: /etc/grafana/oidc-ca
+              readOnly: true

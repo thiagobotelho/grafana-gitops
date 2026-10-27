@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: grafana-loki
+  # Namespace deste objeto; não confundir com seleção de namespaces de origem.
   namespace: grafana
   annotations:
     argocd.argoproj.io/sync-wave: "20"
@@ -25,6 +26,7 @@ metadata:
 rules:
   - apiGroups:
       - loki.grafana.com
+    # Recursos ou dependências desta seção; avaliar seu escopo antes de alterar.
     resources:
       - application
     resourceNames:
@@ -46,10 +48,12 @@ metadata:
   name: grafana-loki-application-view
   annotations:
     argocd.argoproj.io/sync-wave: "20"
+# Referência de permissão; este vínculo não cria identidades no provedor.
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: cluster-logging-application-view
+# Identidades que recebem as permissões declaradas pelo papel referenciado.
 subjects:
   - kind: ServiceAccount
     name: grafana-loki
