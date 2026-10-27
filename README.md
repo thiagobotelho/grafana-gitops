@@ -222,9 +222,7 @@ Drilldown preparado:
 - Tempo → Prometheus Apps via `tracesToMetrics` usando as métricas
   `traces_span_metrics_*` geradas pelo OpenTelemetry Collector;
 - Service Graph fica configurado para usar `prometheus-apps`, mas depende das
-  métricas `traces_service_graph_*`; o Red Hat OpenTelemetry Collector 0.152.1
-  validado no CRC não inclui connector `servicegraph`, então essa parte fica
-  documentada como evolução para TempoStack/metrics-generator ou Alloy;
+  métricas `traces_service_graph_*`; confira o suporte ao connector servicegraph na imagem do Collector; quando ausente, utilize Tempo metrics-generator ou Alloy;
 - Profiles Drilldown usa o datasource `pyroscope` e `tracesToProfiles` no
   Tempo em nível de serviço/namespace. Sem aplicações instrumentadas, o
   datasource fica disponível, mas não haverá flamegraphs úteis. O link
@@ -240,7 +238,7 @@ Drilldown preparado:
 - o OAuth usa Keycloak Generic OAuth/OIDC, grupos do realm e `role_attribute_path`;
 - cookies seguros, CSP e HSTS ficam habilitados no overlay CRC para aproximar o
   comportamento local de um ambiente real;
-- TLS interno é ignorado apenas no perfil local; distribua a CA em produção;
+- configure a CA de cada endpoint e mantenha a verificação TLS nos datasources;
 - use External Secrets/Sealed Secrets para Zabbix e credenciais administrativas;
 - restrinja a Route com autenticação e RBAC apropriados;
 - fixe versões do Operator/Grafana após homologação.
@@ -258,7 +256,7 @@ oc -n grafana logs -l app=grafana --tail=100
 O datasource Tempo usa o gateway do `tempo-gitops` com token de ServiceAccount
 em `grafana/grafana-tempo-token`.
 
-No CRC atual, a busca HTTP de traces funciona pelo caminho:
+O caminho HTTP configurado para consulta de traces é:
 
 ```text
 https://tempo-tempo-monolithic-gateway.tempo.svc.cluster.local:8080/api/traces/v1/dev/tempo
@@ -299,9 +297,7 @@ Logging:
 https://loki-gateway-http.openshift-logging.svc.cluster.local:8080/api/logs/v1/application
 ```
 
-Esse caminho responde consultas LogQL, `query_range` e `labels`, mas no CRC
-validado o gateway retorna `404` para endpoints usados por partes do Grafana
-Logs Drilldown, como `detected_labels` e `detected_fields`. Portanto, logs e
+Esse caminho responde consultas LogQL, `query_range` e `labels`, mas alguns gateways podem retornar `404` para endpoints usados por partes do Grafana Logs Drilldown, como `detected_labels` e `detected_fields`. Portanto, logs e
 trace-to-logs funcionam, mas a experiência completa de Logs Drilldown depende
 de uma API Loki compatível sendo exposta ao Grafana.
 
@@ -334,4 +330,8 @@ sincronizar pelo Argo CD. Mais detalhes: `docs/AMBIENTES.md`.
 
 O overlay desenvolvimento propõe a pasta Service Mesh e o dashboard **OpenShift Service Mesh — CRC Lab**, com o datasource já existente `prometheus-apps`. Ele inclui RPS, respostas, latência p50/p95/p99, origem/destino, mTLS e ausência de telemetria. As consultas HTTP usam reporter destination para evitar contagem dupla.
 
-A implantação do Mesh e o preenchimento real dos painéis ainda estão pendentes. Confirmar nomes/unidade das séries e labels no scrape. O conteúdo de referência fica em [service-mesh-gitops](https://github.com/thiagobotelho/service-mesh-gitops/blob/main/docs/GRAFANA.md); manter somente este repositório como proprietário dos CRs quando a integração for aprovada. Os assets de referência não devem ser aplicados em paralelo. Nenhum ajuste de Keycloak ou autenticação é necessário.
+Após instalar o Mesh e configurar a coleta, gere tráfego e confira os painéis. Confirmar nomes/unidade das séries e labels no scrape. O conteúdo de referência fica em [service-mesh-gitops](https://github.com/thiagobotelho/service-mesh-gitops/blob/main/docs/GRAFANA.md); manter somente este repositório como proprietário dos CRs para provisionar os CRs. Os assets de referência não devem ser aplicados em paralelo. Nenhum ajuste de Keycloak ou autenticação é necessário.
+
+## Manual de operação
+
+Consulte [docs/OPERACAO.md](docs/OPERACAO.md) para os procedimentos de configuração, verificação e manutenção.
