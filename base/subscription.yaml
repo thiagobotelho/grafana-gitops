@@ -2,7 +2,6 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: grafana-operator
-  # Namespace deste objeto; não confundir com seleção de namespaces de origem.
   namespace: grafana-operator
   annotations:
     argocd.argoproj.io/sync-wave: "2"
