@@ -1,0 +1,38 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: loki-audit
+  namespace: grafana
+  annotations:
+    argocd.argoproj.io/sync-wave: "22"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  valuesFrom:
+  - targetPath: secureJsonData.tlsCACert
+    valueFrom:
+      configMapKeyRef:
+        name: openshift-service-ca.crt
+        key: service-ca.crt
+  - targetPath: secureJsonData.httpHeaderValue1
+    valueFrom:
+      secretKeyRef:
+        name: grafana-loki-audit-token
+        key: token
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasource:
+    uid: loki-audit
+    name: Loki-Audit
+    type: loki
+    access: proxy
+    url: https://loki-gateway-http.openshift-logging.svc.cluster.local:8080/api/logs/v1/audit
+    jsonData:
+      tlsSkipVerify: false
+      tlsAuthWithCACert: true
+      httpHeaderName1: Authorization
+      httpHeaderName2: X-Scope-OrgID
+    secureJsonData:
+      tlsCACert: "${service-ca.crt}"
+      httpHeaderValue1: "Bearer ${token}"
+      httpHeaderValue2: audit

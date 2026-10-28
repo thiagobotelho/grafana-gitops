@@ -1,0 +1,54 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: mesh-network-security
+  namespace: grafana
+  annotations:
+    argocd.argoproj.io/sync-wave: '40'
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folderRef: grafana-folder-service-mesh
+  resyncPeriod: 1h
+  json: '{"uid":"mesh-network-security","title":"Segurança do Mesh e NetworkPolicy","schemaVersion":39,"version":1,"timezone":"browser","refresh":"30s","tags":["istio","security","networkpolicy"],"time":{"from":"now-30m","to":"now"},"templating":{"list":[{"name":"namespace","label":"Namespace","type":"textbox","query":"mesh-lab","current":{"text":"mesh-lab","value":"mesh-lab"}}]},"panels":[{"id":1,"title":"Percentual
+    HTTP com mTLS observado","type":"timeseries","description":"Apenas requisições HTTP observadas. Ausência de
+    séries não comprova plaintext nem identifica falhas anteriores ao HTTP.","datasource":{"type":"prometheus","uid":"prometheus-apps"},"gridPos":{"h":7,"w":12,"x":0,"y":0},"targets":[{"refId":"A","expr":"100
+    * sum(rate(istio_requests_total{reporter=\"destination\",destination_workload_namespace=~\"$namespace\",connection_security_policy=\"mutual_tls\"}[$__rate_interval]))
+    / sum(rate(istio_requests_total{reporter=\"destination\",destination_workload_namespace=~\"$namespace\"}[$__rate_interval]))","legendFormat":"{{source_workload}}
+    {{destination_workload}} {{response_code}}"}],"fieldConfig":{"defaults":{"unit":"percent","noValue":"Sem dados"},"overrides":[]},"options":{}},{"id":2,"title":"Respostas
+    HTTP 403 e 5xx","type":"timeseries","description":"403 pode vir da aplicação ou do proxy; confirme response_code_details
+    nos logs.","datasource":{"type":"prometheus","uid":"prometheus-apps"},"gridPos":{"h":7,"w":12,"x":12,"y":0},"targets":[{"refId":"A","expr":"sum
+    by (source_workload,destination_workload,response_code) (rate(istio_requests_total{reporter=\"destination\",destination_workload_namespace=~\"$namespace\",response_code=~\"403|5..\"}[$__rate_interval]))","legendFormat":"{{source_workload}}
+    {{destination_workload}} {{response_code}}"}],"fieldConfig":{"defaults":{"unit":"reqps","noValue":"Sem dados"},"overrides":[]},"options":{}},{"id":3,"title":"Rejeições
+    no listener do Envoy","type":"timeseries","description":"Correlação necessária: também pode indicar incompatibilidade
+    de protocolo/SNI, não somente mTLS.","datasource":{"type":"prometheus","uid":"prometheus-apps"},"gridPos":{"h":7,"w":12,"x":0,"y":9},"targets":[{"refId":"A","expr":"sum
+    by (pod) (rate(envoy_listener_downstream_cx_no_filter_chain_match{namespace=~\"$namespace\"}[$__rate_interval]))","legendFormat":"{{source_workload}}
+    {{destination_workload}} {{response_code}}"}],"fieldConfig":{"defaults":{"unit":"ops","noValue":"Sem dados"},"overrides":[]},"options":{}},{"id":4,"title":"Falhas
+    TLS do Envoy","type":"timeseries","description":"Counters disponíveis dependem do protocolo e dos stats expostos
+    pelo proxy; painel vazio não é zero.","datasource":{"type":"prometheus","uid":"prometheus-apps"},"gridPos":{"h":7,"w":12,"x":12,"y":9},"targets":[{"refId":"A","expr":"sum
+    by (pod) (rate({__name__=~\"envoy_.*ssl_(connection_error|fail_verify_no_cert|fail_verify_error)\",namespace=~\"$namespace\"}[$__rate_interval]))","legendFormat":"{{source_workload}}
+    {{destination_workload}} {{response_code}}"}],"fieldConfig":{"defaults":{"unit":"ops","noValue":"Sem dados"},"overrides":[]},"options":{}},{"id":5,"title":"Mesh:
+    recusas de autorização","type":"logs","description":"Log JSON do Envoy dentro do campo message do OpenShift
+    Logging.","datasource":{"type":"loki","uid":"loki"},"gridPos":{"h":9,"w":12,"x":0,"y":18},"targets":[{"refId":"A","expr":"{log_type=\"application\"}
+    | kubernetes_namespace_name=~\"$namespace\" | kubernetes_container_name=\"istio-proxy\" | json payload=\"message\"
+    | line_format \"{{.payload}}\" | json | __error__=\"\" | response_code_details=~\"rbac_access_denied.*\"","queryType":"range"}],"fieldConfig":{"defaults":{"unit":"short","noValue":"Sem
+    dados"},"overrides":[]},"options":{"showTime":true,"wrapLogMessage":true,"sortOrder":"Descending"}},{"id":6,"title":"Mesh:
+    conexões recusadas no listener","type":"logs","description":"Log JSON do Envoy dentro do campo message do OpenShift
+    Logging.","datasource":{"type":"loki","uid":"loki"},"gridPos":{"h":9,"w":12,"x":12,"y":18},"targets":[{"refId":"A","expr":"{log_type=\"application\"}
+    | kubernetes_namespace_name=~\"$namespace\" | kubernetes_container_name=\"istio-proxy\" | json payload=\"message\"
+    | line_format \"{{.payload}}\" | json | __error__=\"\" | response_code_details=\"filter_chain_not_found\"","queryType":"range"}],"fieldConfig":{"defaults":{"unit":"short","noValue":"Sem
+    dados"},"overrides":[]},"options":{"showTime":true,"wrapLogMessage":true,"sortOrder":"Descending"}},{"id":7,"title":"Mesh:
+    respostas 5xx","type":"logs","description":"Log JSON do Envoy dentro do campo message do OpenShift Logging.","datasource":{"type":"loki","uid":"loki"},"gridPos":{"h":9,"w":12,"x":0,"y":27},"targets":[{"refId":"A","expr":"{log_type=\"application\"}
+    | kubernetes_namespace_name=~\"$namespace\" | kubernetes_container_name=\"istio-proxy\" | json payload=\"message\"
+    | line_format \"{{.payload}}\" | json | __error__=\"\" | response_code=~\"5..\"","queryType":"range"}],"fieldConfig":{"defaults":{"unit":"short","noValue":"Sem
+    dados"},"overrides":[]},"options":{"showTime":true,"wrapLogMessage":true,"sortOrder":"Descending"}},{"id":8,"title":"OVN:
+    NetworkPolicy Drop","type":"logs","description":"Consulta persistida no Git; escolha intervalo que inclua a
+    tentativa. Logs OVN pertencem ao tenant audit.","datasource":{"type":"loki","uid":"loki-audit"},"gridPos":{"h":9,"w":12,"x":12,"y":27},"targets":[{"refId":"A","expr":"{log_type=\"audit\"}
+    |= \"NP:\" |~ \"NP:(${namespace:regex}):\" |= \"verdict=drop\"","queryType":"range"}],"fieldConfig":{"defaults":{"unit":"short","noValue":"Sem
+    dados"},"overrides":[]},"options":{"showTime":true,"wrapLogMessage":true,"sortOrder":"Descending"}},{"id":9,"title":"OVN:
+    NetworkPolicy Allow","type":"logs","description":"Consulta persistida no Git; escolha intervalo que inclua a
+    tentativa. Logs OVN pertencem ao tenant audit.","datasource":{"type":"loki","uid":"loki-audit"},"gridPos":{"h":9,"w":12,"x":0,"y":36},"targets":[{"refId":"A","expr":"{log_type=\"audit\"}
+    |= \"NP:\" |~ \"NP:(${namespace:regex}):\" |= \"verdict=allow\"","queryType":"range"}],"fieldConfig":{"defaults":{"unit":"short","noValue":"Sem
+    dados"},"overrides":[]},"options":{"showTime":true,"wrapLogMessage":true,"sortOrder":"Descending"}}]}'
