@@ -26,3 +26,9 @@ jobs:
           /tmp/crd-schema-venv/bin/python tests/validate-crds.py
       - name: Validar dependências do primeiro sync
         run: /tmp/crd-schema-venv/bin/python tests/validate-bootstrap-order.py
+
+      - name: Validar PromQL do dashboard de segurança
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y prometheus
+          /tmp/crd-schema-venv/bin/python tests/test-security-dashboard.py
