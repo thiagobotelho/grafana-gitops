@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: grafana-loki-audit
+  namespace: grafana
+  annotations:
+    argocd.argoproj.io/sync-wave: "20"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: grafana-loki-audit-token
+  namespace: grafana
+  annotations:
+    kubernetes.io/service-account.name: grafana-loki-audit
+    argocd.argoproj.io/sync-wave: "20"
+type: kubernetes.io/service-account-token
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: grafana-loki-audit-view
+  annotations:
+    argocd.argoproj.io/sync-wave: "20"
+rules:
+- apiGroups: [loki.grafana.com]
+  resources: [audit]
+  resourceNames: [logs]
+  verbs: [get]
+- apiGroups: [""]
+  resources: [namespaces]
+  verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: grafana-loki-audit-view
+  annotations:
+    argocd.argoproj.io/sync-wave: "20"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: grafana-loki-audit-view
+subjects:
+- kind: ServiceAccount
+  name: grafana-loki-audit
+  namespace: grafana
