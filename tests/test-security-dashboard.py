@@ -35,6 +35,14 @@ fixture = {'rule_files': [], 'evaluation_interval': '1m', 'tests': [{
     ],
     'promql_expr_test': cases,
 }]}
+mtls_expr = dashboard['panels'][0]['targets'][0]['expr'].replace('$namespace', 'mesh-lab').replace('$__rate_interval', '5m')
+http_series = 'istio_requests_total{reporter="destination",destination_workload_namespace="mesh-lab",connection_security_policy="mutual_tls"}'
+fixture['tests'].extend([
+    {'interval': '1m', 'input_series': [{'series': http_series, 'values': '0+60x20'}],
+     'promql_expr_test': [{'expr': mtls_expr, 'eval_time': '10m', 'exp_samples': [{'labels': '{}', 'value': 100}]}]},
+    {'interval': '1m', 'input_series': [{'series': http_series, 'values': '0+0x20'}],
+     'promql_expr_test': [{'expr': mtls_expr, 'eval_time': '10m', 'exp_samples': []}]},
+])
 promtool = os.environ.get('PROMTOOL') or shutil.which('promtool')
 if not promtool:
     raise SystemExit('BLOCKED: promtool ausente')
