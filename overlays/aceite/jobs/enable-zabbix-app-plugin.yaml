@@ -2,7 +2,6 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: grafana-enable-zabbix-app-plugin
-  # Namespace deste objeto; não confundir com seleção de namespaces de origem.
   namespace: grafana
   annotations:
     argocd.argoproj.io/hook: PostSync
